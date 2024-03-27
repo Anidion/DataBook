@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "node ./src/app.js",
-    "migrate": "yarn drizzle-kit generate:mysql"
+    "migrate": "yarn drizzle-kit push:mysql"
   },
   "dependencies": {
     "drizzle-orm": "^0.30.4",
