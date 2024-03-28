@@ -1,11 +1,13 @@
 import express from "express";
 import { drizzle } from "drizzle-orm/mysql2";
-import { migrate } from "drizzle-orm/mysql2/migrator";
-
 import mysql from "mysql2/promise";
+
+import * as schema from "../db/schema.js";
 
 const app = express();
 const port = 3001;
+
+let db;
 
 try {
   // We're hardcoding the connection details here since the DB is local
@@ -17,14 +19,16 @@ try {
     password: "cpsc471",
   });
 
-  const db = drizzle(connection);
-  await migrate(db, { migrationsFolder: "drizzle" });
+  db = drizzle(connection, { schema, mode: "mysql" });
 } catch (err) {
   console.error("Error connecting to the database: ", err);
+  process.exit(1);
 }
 
-app.get("/", (req, res) => {
-  res.send("Hello World!");
+app.get("/", async (req, res) => {
+  const result = await db.select().from(schema.user);
+
+  res.send(result);
 });
 
 app.listen(port, () => {
