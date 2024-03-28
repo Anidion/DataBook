@@ -15,7 +15,7 @@
 		"vs-code-prettier-eslint.prettierLast": false, // set as "true" to run 'prettier' last not first
 		"files.exclude": {
 			// Files we shouldn't manually edit:
-			"**/package.json": true,
+			// "**/package.json": true,
 			"**/*.lock": true,
 			"**/node_modules": true,
 			"**/next-env.d.ts": true,

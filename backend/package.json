@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "dev": "node ./src/app.js",
-    "migrate": "yarn drizzle-kit push:mysql"
+    "lint": "prettier-eslint --write \"./**/*.js\"",
+    "migrate": "drizzle-kit push:mysql"
   },
   "dependencies": {
     "cors": "^2.8.5",

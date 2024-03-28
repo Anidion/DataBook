@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "prettier-eslint --write \"./**/*.js\""
   },
   "dependencies": {
     "@nextui-org/button": "2.0.26",
