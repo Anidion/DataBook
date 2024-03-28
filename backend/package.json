@@ -9,6 +9,7 @@
     "migrate": "yarn drizzle-kit push:mysql"
   },
   "dependencies": {
+    "cors": "^2.8.5",
     "drizzle-orm": "^0.30.4",
     "express": "^4.18.3",
     "mysql2": "^3.9.2"

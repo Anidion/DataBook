@@ -21,5 +21,8 @@
 			"**/next-env.d.ts": true,
 			"**/.next": true,
 		},
+		"[typescriptreact]": {
+			"editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
+		},
 	}
 }

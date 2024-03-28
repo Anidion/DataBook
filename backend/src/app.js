@@ -1,10 +1,18 @@
 import express from "express";
 import { drizzle } from "drizzle-orm/mysql2";
 import mysql from "mysql2/promise";
+import cors from "cors";
 
 import * as schema from "../db/schema.js";
 
 const app = express();
+
+const corsOptions = {
+  origin: "http://localhost:3000",
+  optionsSuccessStatus: 200,
+};
+
+app.use(cors(corsOptions));
 const port = 3001;
 
 let db;
@@ -25,9 +33,11 @@ try {
   process.exit(1);
 }
 
+// Define routes
 app.get("/", async (req, res) => {
+  console.log("Received request at /:", req.query);
   const result = await db.select().from(schema.user);
-
+  console.log("Returning:", result);
   res.send(result);
 });
 
