@@ -1,9 +1,9 @@
 import express from "express";
-import { drizzle } from "drizzle-orm/mysql2";
-import mysql from "mysql2/promise";
 import cors from "cors";
 
 import * as schema from "../db/schema.js";
+import AuthService from "./services/auth.js";
+import DbService from "./services/db.js";
 
 const app = express();
 
@@ -13,25 +13,9 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-const port = 3001;
 
-let db;
-
-try {
-  // We're hardcoding the connection details here since the DB is local
-  // In a production environment, we would store this in a .env file
-  const connection = await mysql.createConnection({
-    host: "localhost",
-    user: "databook",
-    database: "db",
-    password: "cpsc471",
-  });
-
-  db = drizzle(connection, { schema, mode: "mysql" });
-} catch (err) {
-  console.error("Error connecting to the database: ", err);
-  process.exit(1);
-}
+// Connect to the database
+const db = await DbService.createConnection();
 
 // Define routes
 app.get("/", async (req, res) => {
@@ -40,6 +24,30 @@ app.get("/", async (req, res) => {
   console.log("Returning:", result);
   res.send(result);
 });
+
+app.get("/auth/signin", async (req, res) => {
+  console.log("Received request at /auth/signin:", req.query);
+  const { email, password } = req.query;
+  const result = await AuthService.signin(email, password);
+  if (result?.error) {
+    res.status(401);
+  }
+  console.log("Returning:", result);
+  res.send(result);
+});
+
+app.post("/auth/signup", async (req, res) => {
+  console.log("Received request at /auth/signup:", req.query);
+  const { email, password, username } = req.query;
+  const result = await AuthService.signup(email, password, username);
+  if (result?.error) {
+    res.status(401);
+  }
+  console.log("Returning:", result);
+  res.send(result);
+});
+
+const port = 3001;
 
 app.listen(port, () => {
   console.log(`DataBook backend listening at http://localhost:${port}`);

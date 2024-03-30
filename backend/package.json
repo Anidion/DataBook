@@ -10,6 +10,8 @@
     "migrate": "drizzle-kit push:mysql"
   },
   "dependencies": {
+    "bcrypt": "^5.1.1",
+    "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "drizzle-orm": "^0.30.4",
     "express": "^4.18.3",
