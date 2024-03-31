@@ -20,8 +20,7 @@ const DbService = {
       db = drizzle(connection, { schema, mode: "mysql" });
       return db;
     } catch (err) {
-      console.error("Error connecting to the database: ", err);
-      process.exit(1);
+      throw new Error("Error connecting to the database:", err);
     }
   },
 };
