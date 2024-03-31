@@ -1,30 +1,21 @@
-import { backend } from "@/services/axios";
-import {
-  Button,
-  Card,
-  CardBody,
-  CardFooter,
-  Divider,
-  Input,
-  colors,
-  semanticColors,
-} from "@nextui-org/react";
+"use client";
+
 import React, { FormEvent, useMemo, useState } from "react";
+import { Button, Input } from "@nextui-org/react";
 import { SigninIcon } from "./icons";
 import { DividerWithText } from "./DividerWithText";
+import { backend } from "@/services/axios";
+import { saveSession } from "@/services/session";
+import { useRouter } from "next/navigation";
+import { useSWRConfig } from "swr";
 
-type Props = {
-  showSignUp: boolean;
-  setShowSignUp: React.Dispatch<React.SetStateAction<boolean>>;
-};
-
-const SignIn: React.FC<Props> = ({ showSignUp, setShowSignUp }) => {
+const SignIn: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [failedSubmit, setFailedSubmit] = useState(false);
-  const [success, setSuccess] = useState("");
+  const [showSignUp, setShowSignUp] = useState(false);
   const [error, setError] = useState("");
 
   const usernameIsValid = useMemo(() => username.length >= 3, [username]);
@@ -34,17 +25,29 @@ const SignIn: React.FC<Props> = ({ showSignUp, setShowSignUp }) => {
   );
   const passwordIsValid = useMemo(() => password.length >= 8, [password]);
 
+  const router = useRouter();
+  const { mutate } = useSWRConfig();
+
   const signIn = async () => {
-    const response = await backend.get("/auth/signin", {
-      params: { email, password },
-    });
+    try {
+      const response = await backend.get("/auth/signin", {
+        params: { email, password },
+      });
 
-    console.log("response:", response);
+      console.log("response:", response);
 
-    if (response.status === 200) {
-      console.log("Sign in successful");
-    } else {
-      console.error("Sign in failed");
+      if (response.status === 200) {
+        console.log("Sign in successful", response.data);
+        await saveSession(response.data);
+        mutate("/api/session");
+        // Uncomment when this is implemented
+        // router.push("/dashboard");
+      } else {
+        console.error("Sign in failed - status:", response.status);
+      }
+    } catch (error) {
+      console.error("Sign in failed - caught:", error);
+    } finally {
     }
   };
 
@@ -56,7 +59,11 @@ const SignIn: React.FC<Props> = ({ showSignUp, setShowSignUp }) => {
     console.log("response:", response);
 
     if (response.status === 200) {
-      console.log("Sign in successful");
+      console.log("Sign up successful", response.data);
+      await saveSession(response.data);
+      mutate("/api/session");
+      // Uncomment when this is implemented
+      // router.push("/dashboard");
     } else {
       console.error("Sign in failed");
     }
@@ -83,6 +90,19 @@ const SignIn: React.FC<Props> = ({ showSignUp, setShowSignUp }) => {
 
   return (
     <>
+      <h1 className="mb-5 text-center text-2xl font-bold text-primary">
+        {showSignUp ? (
+          <>
+            Hi!
+            <br />
+            Let&apos;s level up your
+            <br />
+            <span className="text-2xl text-blue-500">Library Experience</span>
+          </>
+        ) : (
+          <>Welcome Back.</>
+        )}
+      </h1>
       <form
         onSubmit={(event) => handleSubmit(event)}
         noValidate

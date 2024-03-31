@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Navbar as NextUINavbar,
   NavbarContent,
@@ -19,8 +21,15 @@ import clsx from "clsx";
 import { ThemeSwitch } from "@/components/theme-switch";
 
 import { Logo } from "@/components/icons";
+import { useSwrRequest } from "@/services/useSwrRequest";
+import { Spinner } from "@nextui-org/react";
+import { useRouter } from "next/navigation";
+import { useSWRConfig } from "swr";
 
-export const Navbar = async () => {
+export const Navbar = () => {
+  const { data: user, error, isLoading } = useSwrRequest("/api/session");
+  const router = useRouter();
+  const { mutate } = useSWRConfig();
   return (
     <NextUINavbar maxWidth="xl" position="sticky">
       <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
@@ -49,7 +58,13 @@ export const Navbar = async () => {
       </NavbarContent>
 
       <NavbarContent className="basis-1 pl-4 sm:hidden" justify="end">
-        User
+        {isLoading ? (
+          <Spinner size="sm" color="secondary" />
+        ) : user && Object.keys(user).length ? (
+          `Logged in As ${user.username}`
+        ) : (
+          "Logged Out"
+        )}
       </NavbarContent>
 
       <NavbarContent className="basis-1 pl-4 sm:hidden" justify="end">
@@ -59,23 +74,28 @@ export const Navbar = async () => {
 
       <NavbarMenu>
         <div className="mx-4 mt-2 flex flex-col gap-2">
-          {siteConfig.navMenuItems.map((item, index) => (
-            <NavbarMenuItem key={`${item}-${index}`}>
-              <Link
-                color={
-                  index === 2
-                    ? "primary"
-                    : index === siteConfig.navMenuItems.length - 1
-                      ? "danger"
-                      : "foreground"
-                }
-                href="#"
-                size="lg"
-              >
-                {item.label}
-              </Link>
-            </NavbarMenuItem>
-          ))}
+          {siteConfig.navMenuItems.map((item, index) =>
+            item?.condition && !item?.condition(user) ? null : (
+              <NavbarMenuItem key={`${item}-${index}`}>
+                <Link
+                  color={
+                    index === 2
+                      ? "primary"
+                      : index === siteConfig.navMenuItems.length - 1
+                        ? "danger"
+                        : "foreground"
+                  }
+                  href="#"
+                  onClick={
+                    item.logout ? () => item.logout(router, mutate) : undefined
+                  }
+                  size="lg"
+                >
+                  {item.label}
+                </Link>
+              </NavbarMenuItem>
+            ),
+          )}
         </div>
       </NavbarMenu>
     </NextUINavbar>

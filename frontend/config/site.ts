@@ -1,3 +1,8 @@
+import { useSWRConfig } from "swr";
+import { endSession } from "@/services/session";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import { ScopedMutator } from "swr/dist/_internal";
+
 export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
@@ -10,25 +15,31 @@ export const siteConfig = {
     },
     {
       label: "Library",
-      href: "/docs",
+      href: "/library",
     },
     {
       label: "Dashboard",
-      href: "/pricing",
+      href: "/dashboard",
     },
   ],
   navMenuItems: [
     {
       label: "Library",
-      href: "/docs",
+      href: "/library",
     },
     {
       label: "Dashboard",
-      href: "/pricing",
+      href: "/dashboard",
     },
     {
       label: "Logout",
-      href: "/logout",
+      href: "/",
+      logout: async (router: AppRouterInstance, mutate: ScopedMutator) => {
+        await endSession();
+        mutate("/api/session");
+        router.push("/");
+      },
+      condition: (user: any) => user && Object.keys(user).length,
     },
   ],
 };

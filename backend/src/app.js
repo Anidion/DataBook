@@ -15,6 +15,9 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
+// Connect to the database
+DbService.createConnection();
+
 // Define routes
 app.get("/", async (req, res) => {
   console.log("Received request at /:", req.query);
