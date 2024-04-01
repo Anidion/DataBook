@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-import { and, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import DbService from "./db.js";
 import * as schema from "../../db/schema.js";
 import ErrorService from "./error.js";

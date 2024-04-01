@@ -1,0 +1,12 @@
+{
+  "parserOptions": {
+    "ecmaVersion": 2020,
+    "sourceType": "module"
+  },
+  "plugins": ["node"],
+  "extends": ["eslint:recommended", "plugin:node/recommended"],
+  "env": {
+    "node": true,
+    "es2020": true
+  }
+}

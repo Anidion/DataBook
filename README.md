@@ -3,11 +3,19 @@
 ## First-time Set Up
 
 ```bash
+cd DataBook/
+# install pre-commit packages
+yarn
+
 cd backend/
 # install packages
 yarn
 # migrate DB. You must have the MySQL DB server running
 yarn migrate
+
+cd ../frontend
+# install packages
+yarn
 ```
 
 ## Running Dev Environment

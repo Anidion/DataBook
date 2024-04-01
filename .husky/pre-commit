@@ -1,0 +1,4 @@
+cd ./backend
+yarn prep
+cd ../frontend
+yarn prep

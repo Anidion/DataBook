@@ -13,13 +13,16 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+app.use(express.json());
 
 // Connect to the database
-const db = await DbService.createConnection();
+DbService.createConnection();
 
 // Define routes
 app.get("/", async (req, res) => {
   console.log("Received request at /:", req.query);
+  // Connect to the database
+  const db = await DbService.createConnection();
   const result = await db.select().from(schema.user);
   console.log("Returning:", result);
   res.send(result);
@@ -37,8 +40,14 @@ app.get("/auth/signin", async (req, res) => {
 });
 
 app.post("/auth/signup", async (req, res) => {
-  console.log("Received request at /auth/signup:", req.query);
-  const { email, password, username } = req.query;
+  console.log("Received request at /auth/signup:", req.body);
+  const params = req?.body?.params;
+  if (!params) {
+    res.status(400);
+    res.send("No parameters provided.");
+    return;
+  }
+  const { email, password, username } = params;
   const result = await AuthService.signup(email, password, username);
   if (result?.error) {
     res.status(401);
