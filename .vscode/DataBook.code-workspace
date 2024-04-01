@@ -7,11 +7,11 @@
     {
       "path": "../backend",
       "name": "backend"
-    },
-    {
-      "path": "./",
-      "name": ".vscode"
     }
+    // {
+    //   "path": "../",
+    //   "name": "all"
+    // }
   ],
   "settings": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
