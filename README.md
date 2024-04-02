@@ -38,6 +38,8 @@ yarn drizzle-kit studio
 ```
 to open a web-based DB viewer and confirm the schema was migrated correctly.
 
+If you want a more standard tool, follow these instructions to setup DBeaver: [StackOverflow](https://stackoverflow.com/questions/61749304/connection-between-dbeaver-mysql)
+
 
 ## First-time Set Up
 
