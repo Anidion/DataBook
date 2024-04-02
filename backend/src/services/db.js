@@ -14,7 +14,7 @@ const DbService = {
         host: "localhost",
         user: "databook",
         database: "db",
-        password: "cpsc471",
+        password: "cpsc4711",
       });
 
       db = drizzle(connection, { schema, mode: "mysql" });
