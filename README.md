@@ -1,5 +1,44 @@
 # DataBook Development Guide
 
+## Database Set Up
+
+Download [MySQL Community Server](https://dev.mysql.com/downloads/mysql/). Install it with the standard options.
+
+```bash
+mysql_secure_installation
+```
+Choose at most `LOW` for password validation
+
+Set any password for `root`
+
+Everything else can be answered `Y`
+
+Now the default security setup is done
+
+Next we need to create the user for the db
+
+```bash
+sudo mysql -u root -p
+```
+
+```sql
+CREATE USER 'databook'@'localhost' IDENTIFIED BY 'cpsc4711';
+GRANT CREATE, ALTER, DROP, INSERT, UPDATE, INDEX, DELETE, SELECT, REFERENCES, RELOAD on *.* TO 'databook'@'localhost' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
+```
+Now we create the database
+```sql
+CREATE TABLE db;
+```
+
+After setting up the backend and validating it's connecting fine, try run 
+```bash
+cd backend/
+yarn drizzle-kit studio
+```
+to open a web-based DB viewer and confirm the schema was migrated correctly.
+
+
 ## First-time Set Up
 
 ```bash
