@@ -1,5 +1,13 @@
 # DataBook Development Guide
 
+## Basic Set Up
+
+Install [nvm](https://github.com/nvm-sh/nvm), then run `nvm install 20.11.1` to install Node v20.11.1.
+
+Run `corepack enable` to enable `yarn` in your shell. [More information on corepack](https://yarnpkg.com/corepack)
+
+Now you can use `yarn` in the next steps.
+
 ## Database Set Up
 
 Download [MySQL Community Server](https://dev.mysql.com/downloads/mysql/). Install it with the standard options.
