@@ -1,10 +1,8 @@
-const ErrorService = {
+export const ErrorService = {
   handleError: (err, message) => {
     console.error(message, err);
     return {
-      error: `${message}: ${err.message || err || "Unknown error."}`,
+      error: `${message ? `${message}: ` : ""}${err && (err?.message || err)}`,
     };
   },
 };
-
-export default ErrorService;
