@@ -1,5 +1,7 @@
 "use client";
 
+import { ReviewModal } from "@/components/ReviewModal";
+import { Book } from "@/types";
 import { Card, CardBody } from "@nextui-org/react";
 import { Button, Input } from "@nextui-org/react";
 import React, { useState } from "react";
@@ -17,11 +19,28 @@ export default function DashboardPage() {
     );
   };
 
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [bookForReview, setBookForReview] = useState({
+    isbn: 0,
+    title: "",
+    author: "",
+  });
+
+  const openReviewModal = (book: Book) => {
+    setBookForReview(book);
+    setIsReviewModalOpen(true);
+  };
+
   // Function to apply the blue outline class
   const inputClassName = isEditable ? "input-editable" : "";
 
   return (
     <div>
+      <ReviewModal
+        isOpen={isReviewModalOpen}
+        onClose={() => setIsReviewModalOpen(false)}
+        book={bookForReview}
+      />
       <Card
         className="my-auto px-4 py-8 md:mx-auto md:w-[50%] md:py-10"
         radius="lg"
@@ -82,6 +101,21 @@ export default function DashboardPage() {
         <CardBody>
           <div>
             <h2 className="mb-3 text-2xl font-bold">Previous Books</h2>
+            <Button
+              type="button"
+              variant="solid"
+              color="primary"
+              // TODO: When clicked, pass correct book props to review modal
+              onClick={() =>
+                openReviewModal({
+                  isbn: 1,
+                  title: "My Life",
+                  author: "Sheerin, Brendan",
+                })
+              }
+            >
+              Leave a Review
+            </Button>
             <h2 className="mb-6 text-2xl font-bold text-primary">1</h2>
             <h3 className="text-lg font-bold">My Life</h3>
             <p>By Sheerin, Brendan</p>

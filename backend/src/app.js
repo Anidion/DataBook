@@ -74,6 +74,21 @@ app.post("/review", async (req, res) => {
 
     const db = DbService.getDb();
 
+    const book = await db
+      .select()
+      .from(schema.book)
+      .where(eq(schema.book.isbn, review.isbn));
+
+    if (!book.length) {
+      return res
+        .status(400)
+        .send(
+          ErrorService.handleError(
+            `Book with ISBN "${review.isbn}" doesn't exist in this library.`,
+          ),
+        );
+    }
+
     await db.insert(schema.review).values({ user: user.id, ...review });
 
     res.status(200).json({});
