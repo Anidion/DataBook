@@ -7,6 +7,7 @@ import { AuthService } from "./services/auth.js";
 import { DbService } from "./services/db.js";
 import { UserService } from "./services/user.js";
 import { ErrorService } from "./services/error.js";
+import { desc, eq, and } from "drizzle-orm";
 
 const app = express();
 
@@ -73,9 +74,7 @@ app.post("/review", async (req, res) => {
 
     const db = DbService.getDb();
 
-    await db
-      .insert(schema.review)
-      .values({ user: user.id, ...review });
+    await db.insert(schema.review).values({ user: user.id, ...review });
 
     res.status(200).json({});
   } catch (err) {
@@ -93,11 +92,78 @@ app.post("/review", async (req, res) => {
   }
 });
 
-// app.get("/review", async (req, res) => {});
+// Get reviews for a given book
+app.get("/review", async (req, res) => {
+  try {
+    console.log("Received request at /review:", req.query);
+    const { isbn } = req.query;
+    if (!isbn) {
+      return res.status(400).send("Missing required fields.");
+    }
 
-// app.put("/review", async (req, res) => {});
+    const db = DbService.getDb();
+    const reviews = await db
+      .select({ review: schema.review })
+      .from(schema.review)
+      .innerJoin(
+        schema.adminapproves,
+        eq(schema.review.id, schema.adminapproves.review),
+      )
+      .where(
+        and(
+          eq(schema.review.isbn, isbn),
+          eq(schema.adminapproves.approved, true),
+        ),
+      )
+      .orderBy(desc(schema.review.createdAt));
 
-// app.delete("/review", async (req, res) => {});
+    res.status(200).json(reviews);
+  } catch (err) {
+    if (res.closed) {
+      return;
+    }
+    return res
+      .status(err.status || 500)
+      .send(
+        ErrorService.handleError(
+          err,
+          "An error occurred while fetching reviews.",
+        ),
+      );
+  }
+});
+
+app.delete("/review", async (req, res) => {
+  try {
+    console.log("Received delete request at /review:", req.query);
+    const { id } = req.query;
+    if (!id) {
+      return res.status(400).send("Missing required fields.");
+    }
+
+    const user = await UserService.getUserIfAuthorized(req, res);
+
+    const db = DbService.getDb();
+
+    await db
+      .delete(schema.review)
+      .where(and(eq(schema.review.id, id), eq(schema.review.user, user.id)));
+
+    res.status(200).json({});
+  } catch (err) {
+    if (res.closed) {
+      return;
+    }
+    return res
+      .status(err.status || 500)
+      .send(
+        ErrorService.handleError(
+          err,
+          "An error occurred while deleting a review.",
+        ),
+      );
+  }
+});
 
 const port = 3001;
 

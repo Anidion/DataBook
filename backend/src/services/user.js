@@ -20,28 +20,25 @@ export const UserService = {
         .send(ErrorService.handleError("Invalid login session"));
     }
 
-    console.log("userFromCookie:", userFromCookie);
-
     const db = DbService.getDb();
 
     const userFromDb = await db
-      .select({ id: schema.user.id })
+      .select()
       .from(schema.user)
       .where(
         and(
+          eq(schema.user.id, userFromCookie.id),
           eq(schema.user.email, userFromCookie.email),
           eq(schema.user.username, userFromCookie.username),
         ),
       )
       .limit(1);
 
-    console.log("userFromDb:", userFromDb);
-
     if (!userFromDb || !userFromDb.length) {
       res.status(401).send(ErrorService.handleError("User does not exist"));
     }
 
-    return userFromDb;
+    return userFromDb[0];
   },
   getUserFromCookie: async (cookie) =>
     await unsealData(cookie, {
