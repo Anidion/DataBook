@@ -151,7 +151,7 @@ export default function DashboardPage() {
             <h2 className="mb-6 text-2xl font-bold text-primary">
               {pastReviews?.length}
             </h2>
-            {pastReviews?.length &&
+            {!!pastReviews?.length &&
               pastReviews.map((review: StoredReview, index) => (
                 <div key={review.review.id}>
                   <h3 className="text-lg font-bold">{review.book.title}</h3>
