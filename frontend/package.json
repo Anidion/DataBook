@@ -33,8 +33,7 @@
     "swr": "^2.2.5",
     "tailwind-variants": "^0.1.18",
     "tailwindcss": "3.3.5",
-    "typescript": "^5.0.4",
-    "yarn": "^1.22.22"
+    "typescript": "^5.0.4"
   },
   "devDependencies": {
     "@typescript-eslint/parser": "^5.0.1",
@@ -42,5 +41,6 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "prettier": "^3.2.5",
     "prettier-plugin-tailwindcss": "^0.5.13"
-  }
+  },
+  "packageManager": "yarn@4.1.1"
 }
