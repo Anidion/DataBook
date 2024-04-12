@@ -1,10 +1,11 @@
 "use client";
 
 import { ReviewModal } from "@/components/ReviewModal";
-import { Book } from "@/types";
+import { backend } from "@/services/axios";
+import { Book, StoredReview } from "@/types";
 import { Card, CardBody } from "@nextui-org/react";
 import { Button, Input } from "@nextui-org/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 export default function DashboardPage() {
   // State to control if inputs are editable
@@ -25,6 +26,23 @@ export default function DashboardPage() {
     title: "",
     author: "",
   });
+
+  const [pastReviews, setPastReviews] = useState<[StoredReview] | []>([]);
+
+  useEffect(() => {
+    async function fetchPastReviews() {
+      const usersReviews = await backend.get("/review");
+      console.log(usersReviews.data);
+      setPastReviews(
+        usersReviews.data.map((review: any) => ({
+          review: review.review,
+          book: { ...review.book, author: review.author.name },
+          adminapproves: review?.adminapproves?.approved ?? false,
+        })),
+      );
+    }
+    fetchPastReviews();
+  }, []);
 
   const openReviewModal = (book: Book) => {
     setBookForReview(book);
@@ -108,9 +126,9 @@ export default function DashboardPage() {
               // TODO: When clicked, pass correct book props to review modal
               onClick={() =>
                 openReviewModal({
-                  isbn: 1,
-                  title: "My Life",
-                  author: "Sheerin, Brendan",
+                  isbn: 9780316029186,
+                  title: "The Witcher",
+                  author: "Andrzej Sapkowski",
                 })
               }
             >
@@ -130,11 +148,24 @@ export default function DashboardPage() {
         <CardBody>
           <div>
             <h2 className="mb-3 text-2xl font-bold">Reviewed Books</h2>
-            <h2 className="mb-6 text-2xl font-bold text-primary">2</h2>
-            <h3 className="text-lg font-bold">My Life</h3>
-            <p>By Sheerin, Brendan</p>
-            <h3 className="text-lg font-bold">My Life</h3>
-            <p>By Sheerin, Brendan</p>
+            <h2 className="mb-6 text-2xl font-bold text-primary">
+              {pastReviews?.length}
+            </h2>
+            {pastReviews?.length &&
+              pastReviews.map((review: StoredReview, index) => (
+                <div key={review.review.id}>
+                  <h3 className="text-lg font-bold">{review.book.title}</h3>
+                  <p className="text-sm">{review.book.author}</p>
+                  <p>{"⭐".repeat(Number(review.review.rating))}</p>
+                  <p>&quot;{review.review.content}&quot;</p>
+                  <p className="text-sm">
+                    {review.adminapproves.approved
+                      ? "Approved"
+                      : "Pending Approval"}
+                  </p>
+                  {index !== pastReviews.length - 1 && <hr className="my-2" />}
+                </div>
+              ))}
           </div>
         </CardBody>
       </Card>
