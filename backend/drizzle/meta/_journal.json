@@ -1,3 +1,18 @@
 {
-  "entries": []
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1712964597239,
+      "tag": "0000_daily_yellowjacket",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1712964968549,
+      "tag": "0001_melodic_millenium_guard",
+      "breakpoints": true
+    }
+  ]
 }

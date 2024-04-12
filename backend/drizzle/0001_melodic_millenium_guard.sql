@@ -1,0 +1,1 @@
+ALTER TABLE `book` ADD `coverUrl` varchar(1024);
