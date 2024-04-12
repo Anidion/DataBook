@@ -1,14 +1,14 @@
 import bcrypt from "bcrypt";
 import { eq } from "drizzle-orm";
-import DbService from "./db.js";
+import { DbService } from "./db.js";
 import * as schema from "../../db/schema.js";
-import ErrorService from "./error.js";
+import { ErrorService } from "./error.js";
 
 const { user } = schema;
 
 const hashPassword = async (password) => await bcrypt.hash(password, 10);
 
-const AuthService = {
+export const AuthService = {
   signin: async (email, password) => {
     try {
       if (!email || !password) {
@@ -58,11 +58,13 @@ const AuthService = {
       }
 
       const hashedPassword = await hashPassword(password);
-      return await db.insert(schema.user).values({
+      await db.insert(schema.user).values({
         email: email,
         password: hashedPassword,
         username: username,
       });
+
+      return AuthService.signin(email, password);
     } catch (err) {
       return ErrorService.handleError(
         err,
@@ -71,5 +73,3 @@ const AuthService = {
     }
   },
 };
-
-export default AuthService;

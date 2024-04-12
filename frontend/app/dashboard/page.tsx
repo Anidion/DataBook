@@ -1,8 +1,10 @@
 "use client";
 
-import { Card, CardBody } from "@nextui-org/react";
-import { Button, Input } from "@nextui-org/react";
-import React, { useState } from "react";
+import { ReviewModal } from "@/components/ReviewModal";
+import { backend } from "@/services/axios";
+import { Book, StoredReview } from "@/types";
+import { Card, CardBody, Button, Input } from "@nextui-org/react";
+import React, { useEffect, useState } from "react";
 
 export default function DashboardPage() {
   // State to control if inputs are editable
@@ -17,11 +19,45 @@ export default function DashboardPage() {
     );
   };
 
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [bookForReview, setBookForReview] = useState({
+    isbn: 0,
+    title: "",
+    author: "",
+  });
+
+  const [pastReviews, setPastReviews] = useState<[StoredReview] | []>([]);
+
+  useEffect(() => {
+    async function fetchPastReviews() {
+      const usersReviews = await backend.get("/review");
+      console.log(usersReviews.data);
+      setPastReviews(
+        usersReviews.data.map((review: any) => ({
+          review: review.review,
+          book: { ...review.book, author: review.author.name },
+          adminapproves: review?.adminapproves?.approved ?? false,
+        })),
+      );
+    }
+    fetchPastReviews();
+  }, []);
+
+  const openReviewModal = (book: Book) => {
+    setBookForReview(book);
+    setIsReviewModalOpen(true);
+  };
+
   // Function to apply the blue outline class
   const inputClassName = isEditable ? "input-editable" : "";
 
   return (
     <div>
+      <ReviewModal
+        isOpen={isReviewModalOpen}
+        onClose={() => setIsReviewModalOpen(false)}
+        book={bookForReview}
+      />
       <Card
         className="my-auto px-4 py-8 md:mx-auto md:w-[50%] md:py-10"
         radius="lg"
@@ -51,7 +87,7 @@ export default function DashboardPage() {
             </div>
             <div className="text-center">
               <h3 className="text-lg font-semibold">Reviewed</h3>
-              <p className="text-primary">2</p>
+              <p className="text-primary">{pastReviews?.length}</p>
             </div>
           </div>
         </CardBody>
@@ -82,6 +118,21 @@ export default function DashboardPage() {
         <CardBody>
           <div>
             <h2 className="mb-3 text-2xl font-bold">Previous Books</h2>
+            <Button
+              type="button"
+              variant="solid"
+              color="primary"
+              // TODO: When clicked, pass correct book props to review modal
+              onClick={() =>
+                openReviewModal({
+                  isbn: 9780316029186,
+                  title: "The Witcher",
+                  author: "Andrzej Sapkowski",
+                })
+              }
+            >
+              Leave a Review
+            </Button>
             <h2 className="mb-6 text-2xl font-bold text-primary">1</h2>
             <h3 className="text-lg font-bold">My Life</h3>
             <p>By Sheerin, Brendan</p>
@@ -96,11 +147,22 @@ export default function DashboardPage() {
         <CardBody>
           <div>
             <h2 className="mb-3 text-2xl font-bold">Reviewed Books</h2>
-            <h2 className="mb-6 text-2xl font-bold text-primary">2</h2>
-            <h3 className="text-lg font-bold">My Life</h3>
-            <p>By Sheerin, Brendan</p>
-            <h3 className="text-lg font-bold">My Life</h3>
-            <p>By Sheerin, Brendan</p>
+            <h2 className="mb-6 text-2xl font-bold text-primary">
+              {pastReviews?.length}
+            </h2>
+            {!!pastReviews?.length &&
+              pastReviews.map((review: StoredReview, index) => (
+                <div key={review.review.id}>
+                  <h3 className="text-lg font-bold">{review.book.title}</h3>
+                  <p className="text-sm">{review.book.author}</p>
+                  <p>{"⭐".repeat(Number(review.review.rating))}</p>
+                  <p>&quot;{review.review.content}&quot;</p>
+                  <p className="text-sm">
+                    {review.adminapproves ? "Approved" : "Pending Approval"}
+                  </p>
+                  {index !== pastReviews.length - 1 && <hr className="my-2" />}
+                </div>
+              ))}
           </div>
         </CardBody>
       </Card>
