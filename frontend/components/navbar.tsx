@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   Navbar as NextUINavbar,
   NavbarContent,
@@ -27,11 +28,18 @@ import { useRouter } from "next/navigation";
 import { useSWRConfig } from "swr";
 
 export const Navbar = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { data: user, error, isLoading } = useSwrRequest("/api/session");
   const router = useRouter();
   const { mutate } = useSWRConfig();
+
   return (
-    <NextUINavbar maxWidth="xl" position="sticky">
+    <NextUINavbar
+      maxWidth="xl"
+      position="sticky"
+      isMenuOpen={isMenuOpen}
+      onMenuOpenChange={setIsMenuOpen}
+    >
       <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
         <NavbarBrand as="li" className="max-w-fit gap-3">
           <NextLink className="flex items-center justify-start gap-1" href="/">
@@ -57,18 +65,21 @@ export const Navbar = () => {
         </ul>
       </NavbarContent>
 
-      <NavbarContent className="basis-1 pl-4 sm:hidden" justify="end">
+      <NavbarContent className="basis-1 pl-4" justify="end">
         {isLoading ? (
           <Spinner size="sm" color="secondary" />
         ) : user && Object.keys(user).length ? (
-          `Logged in As ${user.username}`
+          `Logged in as ${user.username}`
         ) : (
           "Logged Out"
         )}
       </NavbarContent>
 
-      <NavbarContent className="basis-1 pl-4 sm:hidden" justify="end">
+      <NavbarContent>
         <ThemeSwitch />
+      </NavbarContent>
+
+      <NavbarContent className="basis-1 pl-4 sm:hidden" justify="end">
         <NavbarMenuToggle />
       </NavbarContent>
 
@@ -85,9 +96,11 @@ export const Navbar = () => {
                         ? "danger"
                         : "foreground"
                   }
-                  href="#"
+                  href={item.href ?? "#"}
                   onClick={
-                    item.logout ? () => item.logout(router, mutate) : undefined
+                    item.logout
+                      ? () => item.logout(router, mutate)
+                      : () => setIsMenuOpen(false)
                   }
                   size="lg"
                 >

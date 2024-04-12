@@ -40,14 +40,12 @@ const SignIn: React.FC = () => {
         console.log("Sign in successful", response.data);
         await saveSession(response.data);
         mutate("/api/session");
-        // Uncomment when this is implemented
-        // router.push("/dashboard");
+        router.push("/dashboard");
       } else {
         console.error("Sign in failed - status:", response.status);
       }
     } catch (error) {
       console.error("Sign in failed - caught:", error);
-    } finally {
     }
   };
 
