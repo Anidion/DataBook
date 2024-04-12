@@ -88,7 +88,7 @@ export default function DashboardPage() {
             </div>
             <div className="text-center">
               <h3 className="text-lg font-semibold">Reviewed</h3>
-              <p className="text-primary">2</p>
+              <p className="text-primary">{pastReviews?.length}</p>
             </div>
           </div>
         </CardBody>
