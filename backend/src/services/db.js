@@ -4,7 +4,7 @@ import * as schema from "../../db/schema.js";
 
 let db;
 
-const DbService = {
+export const DbService = {
   getDb: () => db,
   createConnection: async () => {
     try {
@@ -24,5 +24,3 @@ const DbService = {
     }
   },
 };
-
-export default DbService;
