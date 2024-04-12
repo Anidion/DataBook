@@ -3,8 +3,7 @@
 import { ReviewModal } from "@/components/ReviewModal";
 import { backend } from "@/services/axios";
 import { Book, StoredReview } from "@/types";
-import { Card, CardBody } from "@nextui-org/react";
-import { Button, Input } from "@nextui-org/react";
+import { Card, CardBody, Button, Input } from "@nextui-org/react";
 import React, { useEffect, useState } from "react";
 
 export default function DashboardPage() {
@@ -159,9 +158,7 @@ export default function DashboardPage() {
                   <p>{"⭐".repeat(Number(review.review.rating))}</p>
                   <p>&quot;{review.review.content}&quot;</p>
                   <p className="text-sm">
-                    {review.adminapproves.approved
-                      ? "Approved"
-                      : "Pending Approval"}
+                    {review.adminapproves ? "Approved" : "Pending Approval"}
                   </p>
                   {index !== pastReviews.length - 1 && <hr className="my-2" />}
                 </div>
