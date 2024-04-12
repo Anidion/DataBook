@@ -23,7 +23,7 @@ export const DbService = {
       await migrate(db, { migrationsFolder: "drizzle" });
       return db;
     } catch (err) {
-      console.error(err)
+      console.error(err);
       throw new Error("Error connecting to the database:", err);
     }
   },

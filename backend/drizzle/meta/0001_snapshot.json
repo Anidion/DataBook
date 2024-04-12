@@ -51,12 +51,8 @@
           "name": "adminapproves_admin_user_id_fk",
           "tableFrom": "adminapproves",
           "tableTo": "user",
-          "columnsFrom": [
-            "admin"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["admin"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -64,12 +60,8 @@
           "name": "adminapproves_review_review_id_fk",
           "tableFrom": "adminapproves",
           "tableTo": "review",
-          "columnsFrom": [
-            "review"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["review"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -77,10 +69,7 @@
       "compositePrimaryKeys": {
         "adminapproves_admin_review_pk": {
           "name": "adminapproves_admin_review_pk",
-          "columns": [
-            "admin",
-            "review"
-          ]
+          "columns": ["admin", "review"]
         }
       },
       "uniqueConstraints": {}
@@ -192,12 +181,8 @@
           "name": "book_publisher_publisher_id_fk",
           "tableFrom": "book",
           "tableTo": "publisher",
-          "columnsFrom": [
-            "publisher"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["publisher"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -205,9 +190,7 @@
       "compositePrimaryKeys": {
         "book_isbn": {
           "name": "book_isbn",
-          "columns": [
-            "isbn"
-          ]
+          "columns": ["isbn"]
         }
       },
       "uniqueConstraints": {}
@@ -252,12 +235,8 @@
           "name": "bookisgenre_isbn_book_isbn_fk",
           "tableFrom": "bookisgenre",
           "tableTo": "book",
-          "columnsFrom": [
-            "isbn"
-          ],
-          "columnsTo": [
-            "isbn"
-          ],
+          "columnsFrom": ["isbn"],
+          "columnsTo": ["isbn"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -265,12 +244,8 @@
           "name": "bookisgenre_genre_genre_id_fk",
           "tableFrom": "bookisgenre",
           "tableTo": "genre",
-          "columnsFrom": [
-            "genre"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["genre"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -278,10 +253,7 @@
       "compositePrimaryKeys": {
         "bookisgenre_isbn_genre_pk": {
           "name": "bookisgenre_isbn_genre_pk",
-          "columns": [
-            "isbn",
-            "genre"
-          ]
+          "columns": ["isbn", "genre"]
         }
       },
       "uniqueConstraints": {}
@@ -432,12 +404,8 @@
           "name": "reservation_user_user_id_fk",
           "tableFrom": "reservation",
           "tableTo": "user",
-          "columnsFrom": [
-            "user"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -445,12 +413,8 @@
           "name": "reservation_isbn_book_isbn_fk",
           "tableFrom": "reservation",
           "tableTo": "book",
-          "columnsFrom": [
-            "isbn"
-          ],
-          "columnsTo": [
-            "isbn"
-          ],
+          "columnsFrom": ["isbn"],
+          "columnsTo": ["isbn"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -458,11 +422,7 @@
       "compositePrimaryKeys": {
         "reservation_id_user_isbn_pk": {
           "name": "reservation_id_user_isbn_pk",
-          "columns": [
-            "id",
-            "user",
-            "isbn"
-          ]
+          "columns": ["id", "user", "isbn"]
         }
       },
       "uniqueConstraints": {}
@@ -528,12 +488,8 @@
           "name": "review_user_user_id_fk",
           "tableFrom": "review",
           "tableTo": "user",
-          "columnsFrom": [
-            "user"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -541,12 +497,8 @@
           "name": "review_isbn_book_isbn_fk",
           "tableFrom": "review",
           "tableTo": "book",
-          "columnsFrom": [
-            "isbn"
-          ],
-          "columnsTo": [
-            "isbn"
-          ],
+          "columnsFrom": ["isbn"],
+          "columnsTo": ["isbn"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -615,12 +567,8 @@
           "name": "transaction_user_user_id_fk",
           "tableFrom": "transaction",
           "tableTo": "user",
-          "columnsFrom": [
-            "user"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -628,12 +576,8 @@
           "name": "transaction_isbn_book_isbn_fk",
           "tableFrom": "transaction",
           "tableTo": "book",
-          "columnsFrom": [
-            "isbn"
-          ],
-          "columnsTo": [
-            "isbn"
-          ],
+          "columnsFrom": ["isbn"],
+          "columnsTo": ["isbn"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -641,11 +585,7 @@
       "compositePrimaryKeys": {
         "transaction_id_user_isbn_pk": {
           "name": "transaction_id_user_isbn_pk",
-          "columns": [
-            "id",
-            "user",
-            "isbn"
-          ]
+          "columns": ["id", "user", "isbn"]
         }
       },
       "uniqueConstraints": {}
@@ -750,12 +690,8 @@
           "name": "userlikes_user_user_id_fk",
           "tableFrom": "userlikes",
           "tableTo": "user",
-          "columnsFrom": [
-            "user"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -763,12 +699,8 @@
           "name": "userlikes_genre_genre_id_fk",
           "tableFrom": "userlikes",
           "tableTo": "genre",
-          "columnsFrom": [
-            "genre"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["genre"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -776,10 +708,7 @@
       "compositePrimaryKeys": {
         "userlikes_user_genre_pk": {
           "name": "userlikes_user_genre_pk",
-          "columns": [
-            "user",
-            "genre"
-          ]
+          "columns": ["user", "genre"]
         }
       },
       "uniqueConstraints": {}
@@ -824,12 +753,8 @@
           "name": "writtenby_isbn_book_isbn_fk",
           "tableFrom": "writtenby",
           "tableTo": "book",
-          "columnsFrom": [
-            "isbn"
-          ],
-          "columnsTo": [
-            "isbn"
-          ],
+          "columnsFrom": ["isbn"],
+          "columnsTo": ["isbn"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -837,12 +762,8 @@
           "name": "writtenby_author_author_id_fk",
           "tableFrom": "writtenby",
           "tableTo": "author",
-          "columnsFrom": [
-            "author"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["author"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -850,10 +771,7 @@
       "compositePrimaryKeys": {
         "writtenby_isbn_author_pk": {
           "name": "writtenby_isbn_author_pk",
-          "columns": [
-            "isbn",
-            "author"
-          ]
+          "columns": ["isbn", "author"]
         }
       },
       "uniqueConstraints": {}
