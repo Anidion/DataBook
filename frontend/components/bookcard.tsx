@@ -1,3 +1,4 @@
+import { Image } from "@nextui-org/react";
 import * as React from "react";
 
 interface BookProps {
@@ -6,15 +7,15 @@ interface BookProps {
   coverImage: string;
 }
 
-const Book: React.FC<BookProps> = ({ title, author, coverImage }) => {
+const BookCard: React.FC<BookProps> = ({ title, author, coverImage }) => {
   return (
-    <article className="max-w-[550px] rounded-2xl bg-zinc-300 px-16 py-5 shadow-sm max-md:px-5">
+    <article className="margin:20px max-w-[550px] rounded-2xl bg-zinc-300 px-5 py-5 shadow-sm max-md:px-5">
       <div className="flex gap-5 max-md:flex-col max-md:gap-0">
         <div className="flex w-[33%] flex-col max-md:ml-0 max-md:w-full">
-          <img
+          <Image
             loading="lazy"
             src={coverImage}
-            alt={`Cover image for the book "${title}" by ${author}`}
+            alt={title}
             className="mt-1.5 aspect-[0.75] w-[127px] max-w-full shrink-0 grow shadow-sm max-md:mt-10"
           />
         </div>
@@ -36,25 +37,4 @@ const Book: React.FC<BookProps> = ({ title, author, coverImage }) => {
     </article>
   );
 };
-
-const MyComponent: React.FC = () => {
-  const books: BookProps[] = [
-    {
-      title: "My Life",
-      author: "John Doe",
-      coverImage:
-        "https://cdn.builder.io/api/v1/image/assets/TEMP/84b3a59933528c79a2a5e7c646dbb5de37865cccb85cd94dd63bd58e72105edf?apiKey=d0e6c17cae514308933f9abcb88dd7ef&",
-    },
-    // Add more books here as needed
-  ];
-
-  return (
-    <main>
-      {books.map((book, index) => (
-        <Book key={index} {...book} />
-      ))}
-    </main>
-  );
-};
-
-export default MyComponent;
+export default BookCard;
