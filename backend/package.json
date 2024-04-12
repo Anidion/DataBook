@@ -13,7 +13,7 @@
     "lint": "eslint . --ext .js --fix",
     "prettier": "prettier --write .",
     "prep": "eslint . --ext .js --fix && prettier --write .",
-    "migrate": "drizzle-kit push:mysql"
+    "migrate": "drizzle-kit generate:mysql"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
