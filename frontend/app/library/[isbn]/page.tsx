@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardBody } from "@nextui-org/react";
+import { Card, CardBody, Link, Spinner } from "@nextui-org/react";
 import BookView from "@/components/bookview";
 import { backend } from "@/services/axios";
 import { useEffect, useState } from "react";
@@ -27,14 +27,14 @@ export default function Home({
 
   return (
     <>
-      <a href="/library">
-        <button type="button">Back to Library</button>
-      </a>
       <Card
-        className="my-auto px-4 py-8 md:mx-auto md:w-[50%] md:py-10"
+        className="mb-10 px-4 py-8 md:mx-auto md:w-[50%] md:py-10"
         radius="lg"
       >
         <CardBody>
+          <Link href="/library" className="mb-5">
+            ⬅️ Back to Library
+          </Link>
           {book ? (
             <BookView
               isbn={isbn}
@@ -45,7 +45,7 @@ export default function Home({
               coverImage={book.book?.coverUrl || "/img/library.jpg"}
             />
           ) : (
-            <p>Loading book...</p>
+            <Spinner />
           )}
         </CardBody>
       </Card>

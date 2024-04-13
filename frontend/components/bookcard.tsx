@@ -1,4 +1,4 @@
-import { Image } from "@nextui-org/react";
+import { Button, Image } from "@nextui-org/react";
 import Link from "next/link";
 import * as React from "react";
 
@@ -18,9 +18,9 @@ const BookCard: React.FC<BookProps> = ({
   book,
 }) => {
   return (
-    <article className="margin:20px mb-10 max-w-[550px] rounded-2xl bg-zinc-300 px-5 py-5 shadow-sm max-md:px-5">
+    <article className="margin:20px mb-10 max-w-[550px] rounded-2xl bg-slate-300 px-5 py-5 shadow-md max-md:px-5">
       <div className="flex gap-5 max-md:flex-col max-md:gap-0">
-        <div className="flex w-[33%] flex-col max-md:ml-0 max-md:w-full">
+        <div className="flex w-[33%] flex-col items-center max-md:ml-0 max-md:w-full">
           <Image
             loading="lazy"
             src={coverImage}
@@ -32,17 +32,23 @@ const BookCard: React.FC<BookProps> = ({
           <div className="flex flex-col text-base text-black max-md:mt-10">
             <Link
               href={`/library/${isbn}`}
-              className="text-ellipsis text-center text-3xl leading-5"
+              className="mt-3 text-center text-2xl font-bold leading-5 text-foreground max-md:ml-2.5 max-md:text-3xl"
             >
               {title}
             </Link>
-            <p>by {author}</p>
-            <button className="mt-8 items-center justify-center whitespace-nowrap rounded-xl bg-rose-600 px-4 py-2 font-medium leading-[150%] text-black shadow-sm max-md:px-5">
+            <p className="my-2">by {author}</p>
+            <Button
+              type="button"
+              variant="solid"
+              color="primary"
+              className="mb-2"
+            >
               Reserve
-            </button>
-            <button className="mt-3 items-center justify-center rounded-xl bg-white px-4 py-2 font-medium leading-[150%] text-black shadow-sm max-md:px-5">
-              For Later
-            </button>
+            </Button>
+            <br></br>
+            <Button type="button" variant="ghost" color="primary">
+              Save For Later
+            </Button>
           </div>
         </div>
       </div>

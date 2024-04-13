@@ -98,7 +98,7 @@ export default function DashboardPage() {
                   <Button
                     color="success"
                     size="sm"
-                    className="mr-2 mt-3 text-white"
+                    className="mr-2 mt-3 text-foreground"
                     isLoading={updatingReviews}
                     onClick={() => moderateReview(review.review.id, true)}
                   >

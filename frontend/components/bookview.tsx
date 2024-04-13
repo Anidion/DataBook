@@ -27,31 +27,27 @@ const BookView: React.FC<BookViewProps> = ({
           alt={`${title} book cover`}
           className="aspect-[0.67] w-[220px] max-w-full self-end"
         />
-        <h1 className="mt-3 text-center text-5xl font-bold leading-10 text-white max-md:ml-2.5 max-md:text-4xl">
+        <h1 className="mt-3 text-center text-5xl font-bold leading-10 text-foreground max-md:ml-2.5 max-md:text-4xl">
           {title}
         </h1>
-        <p className="text-white-900 mt-2.5 justify-center text-center text-2xl leading-5 max-md:ml-2.5">
+        <p className="mt-2.5 justify-center text-center text-2xl leading-5 text-foreground-900 max-md:ml-2.5">
           {author}
         </p>
       </div>
-      <div>
-        <h4>ISBN: {isbn}</h4>
-        <h4>Genre: {genre}</h4>
+      <div className="mt-2.5">
+        <h4 className="text-sm">ISBN: {isbn}</h4>
+        {genre && <h4>Genre: {genre}</h4>}
       </div>
       <div>
-        <p className="md-5 mb-5 mt-5 w-full text-center text-sm leading-6 text-white max-md:mt-5 max-md:max-w-full">
+        <p className="md-5 mb-5 mt-5 w-full text-center text-sm leading-6 text-foreground max-md:mt-5 max-md:max-w-full">
           {description}
         </p>
       </div>
-      <Button
-        className={`max-w-[300px] items-center justify-center whitespace-nowrap rounded-xl bg-rose-600 px-4 py-3 text-base font-medium leading-6 text-black shadow-sm`}
-      >
+      <Button type="button" variant="solid" color="primary" className="mb-2">
         Reserve
       </Button>
       <br></br>
-      <Button
-        className={`max-w-[300px] items-center justify-center whitespace-nowrap rounded-xl bg-white px-4 py-3 text-base font-medium leading-6 text-black shadow-sm`}
-      >
+      <Button type="button" variant="ghost" color="primary">
         Save For Later
       </Button>
     </article>
