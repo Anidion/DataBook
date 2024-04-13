@@ -74,7 +74,7 @@ export default function DashboardPage() {
   useEffect(() => {
     async function fetchPastBooks() {
       try {
-        const response = await backend.get("/reservation/past");
+        const response = await backend.get("/transaction/past");
         setPastBooks(response.data);
       } catch (error) {
         console.error("Failed to fetch past books:", error);
@@ -82,6 +82,21 @@ export default function DashboardPage() {
     }
 
     fetchPastBooks();
+  }, []);
+
+  const [currentBooks, setCurrentBooks] = useState([]);
+
+  useEffect(() => {
+    async function fetchCurrentBooks() {
+      try {
+        const response = await backend.get("/transaction/current");
+        setCurrentBooks(response.data);
+      } catch (error) {
+        console.error("Failed to fetch current books:", error);
+      }
+    }
+
+    fetchCurrentBooks();
   }, []);
 
   // Function to apply the blue outline class
@@ -102,7 +117,9 @@ export default function DashboardPage() {
           <div>
             <h2 className="mb-3 text-center text-2xl font-bold">Total Books</h2>
             <h2 className="mb-6 text-center text-2xl font-bold text-primary">
-              {pastBooks?.length + pastReservations?.length}
+              {currentBooks?.length +
+                pastBooks?.length +
+                pastReservations?.length}
             </h2>
           </div>
 
@@ -112,18 +129,26 @@ export default function DashboardPage() {
             />
           </div>
 
-          <div className="flex justify-between">
-            <div className="text-center">
-              <h3 className="text-lg font-semibold">Checked Out</h3>
-              <p className="text-primary">{pastReservations?.length}</p>
+          <div className="flex flex-wrap justify-between">
+            <div>
+              <div className="text-center">
+                <h3 className="text-lg font-semibold">Checked Out</h3>
+                <p className="text-primary">{currentBooks?.length}</p>
+              </div>
+              <div className="mt-2 text-center">
+                <h3 className="text-lg font-semibold">On Hold</h3>
+                <p className="text-primary">{pastReservations?.length}</p>
+              </div>
             </div>
-            <div className="text-center">
-              <h3 className="text-lg font-semibold">Previous</h3>
-              <p className="text-primary">{pastBooks?.length}</p>
-            </div>
-            <div className="text-center">
-              <h3 className="text-lg font-semibold">Reviews</h3>
-              <p className="text-primary">{pastReviews?.length}</p>
+            <div>
+              <div className="text-center">
+                <h3 className="text-lg font-semibold">Previous</h3>
+                <p className="text-primary">{pastBooks?.length}</p>
+              </div>
+              <div className="mt-2 text-center">
+                <h3 className="text-lg font-semibold">Reviews</h3>
+                <p className="text-primary">{pastReviews?.length}</p>
+              </div>
             </div>
           </div>
         </CardBody>
@@ -136,6 +161,42 @@ export default function DashboardPage() {
         <CardBody>
           <div>
             <h2 className="mb-3 text-2xl font-bold">Checked Out Books</h2>
+            <h2 className="mb-6 text-2xl font-bold text-primary">
+              {currentBooks?.length}
+            </h2>
+            {!!currentBooks?.length &&
+              currentBooks.map((book: any, index) => (
+                <div key={book.id}>
+                  <h3 className="text-lg font-bold">{book.book.title}</h3>
+                  <p className="text-sm">{book.author?.name}</p>
+                  <p className="text-sm">
+                    Expires on:{" "}
+                    {new Date(book.transaction.enddate).toLocaleDateString()}
+                  </p>
+                  <Button
+                    color="primary"
+                    size="sm"
+                    variant="ghost"
+                    type="button"
+                    className="mt-2"
+                    onClick={() => openReviewModal(book)}
+                  >
+                    Leave a Review
+                  </Button>
+                  {index !== currentBooks.length - 1 && <hr className="my-2" />}
+                </div>
+              ))}
+          </div>
+        </CardBody>
+      </Card>
+
+      <Card
+        className="my-auto mt-10 px-4 py-8 md:mx-auto md:w-[50%] md:py-10"
+        radius="lg"
+      >
+        <CardBody>
+          <div>
+            <h2 className="mb-3 text-2xl font-bold">Books On Hold</h2>
             <h2 className="mb-6 text-2xl font-bold text-primary">
               {pastReservations?.length}
             </h2>
@@ -172,7 +233,7 @@ export default function DashboardPage() {
                   <h3 className="text-lg font-bold">{book.book.title}</h3>
                   <p className="text-sm">{book.author?.name}</p>
                   <p className="text-sm">
-                    Expired On:{" "}
+                    Expired on:{" "}
                     {new Date(book.transaction.enddate).toLocaleDateString()}
                   </p>
                   <Button
@@ -198,7 +259,7 @@ export default function DashboardPage() {
       >
         <CardBody>
           <div>
-            <h2 className="mb-3 text-2xl font-bold">Reviews</h2>
+            <h2 className="mb-3 text-2xl font-bold">Book Reviews</h2>
             <h2 className="mb-6 text-2xl font-bold text-primary">
               {pastReviews?.length}
             </h2>

@@ -8,7 +8,7 @@ import { DbService } from "./services/db.js";
 import { UserService } from "./services/user.js";
 import { ErrorService } from "./services/error.js";
 
-import { desc, eq, lt, or, like, and, isNull } from "drizzle-orm";
+import { desc, eq, lt, or, like, and, isNull, gte } from "drizzle-orm";
 
 import { BookService } from "./services/book.js";
 
@@ -231,13 +231,40 @@ app.get("/reservation", async (req, res) => {
   }
 });
 
-app.get("/reservation/past", async (req, res) => {
+app.get("/transaction/current", async (req, res) => {
   try {
     const user = await UserService.getUserIfAuthorized(req, res);
     const db = DbService.getDb();
-    // const today = new Date().toISOString();
 
-    const pastReservations = await db
+    const currentTransactions = await db
+      .select()
+      .from(schema.transaction)
+      .innerJoin(schema.book, eq(schema.book.isbn, schema.transaction.isbn))
+      .leftJoin(schema.writtenby, eq(schema.book.isbn, schema.writtenby.isbn))
+      .leftJoin(schema.author, eq(schema.writtenby.author, schema.author.id))
+      .where(
+        and(
+          eq(schema.transaction.user, user.id),
+          gte(schema.transaction.enddate, new Date()), // Ensure endDate is NOT before today
+        ),
+      )
+      .orderBy(desc(schema.transaction.enddate));
+
+    res.status(200).json(currentTransactions);
+  } catch (err) {
+    console.error("Error fetching past transactions:", err);
+    res.status(err.status || 500).send({
+      error: "An error occurred while fetching current transactions.",
+    });
+  }
+});
+
+app.get("/transaction/past", async (req, res) => {
+  try {
+    const user = await UserService.getUserIfAuthorized(req, res);
+    const db = DbService.getDb();
+
+    const pastTransactions = await db
       .select()
       .from(schema.transaction)
       .innerJoin(schema.book, eq(schema.book.isbn, schema.transaction.isbn))
@@ -251,11 +278,11 @@ app.get("/reservation/past", async (req, res) => {
       )
       .orderBy(desc(schema.transaction.enddate));
 
-    res.status(200).json(pastReservations);
+    res.status(200).json(pastTransactions);
   } catch (err) {
-    console.error("Error fetching past reservations:", err);
+    console.error("Error fetching past transaction:", err);
     res.status(err.status || 500).send({
-      error: "An error occurred while fetching past reservations.",
+      error: "An error occurred while fetching past transactions.",
     });
   }
 });
