@@ -37,7 +37,7 @@ export const AuthService = {
     } catch (err) {
       return ErrorService.handleError(
         err,
-        "An error occurred while signing in"
+        "An error occurred while signing in",
       );
     }
   },
@@ -68,7 +68,7 @@ export const AuthService = {
     } catch (err) {
       return ErrorService.handleError(
         err,
-        "An error occurred while signing up"
+        "An error occurred while signing up",
       );
     }
   },
