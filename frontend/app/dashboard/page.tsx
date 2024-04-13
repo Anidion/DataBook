@@ -43,10 +43,40 @@ export default function DashboardPage() {
     fetchPastReviews();
   }, []);
 
+  useEffect(() => {
+    async function fetchPastReservations() {
+      try {
+        const usersReservations = await backend.get("/reservation");
+        console.log(usersReservations.data);
+        setPastReservations(usersReservations.data);
+      } catch (error) {
+        console.log("Failed to fetch past reservations", error);
+      }
+    }
+    fetchPastReservations();
+  }, []);
+
+  const [pastReservations, setPastReservations] = useState<[any] | []>([]);
+
   const openReviewModal = (book: Book) => {
     setBookForReview(book);
     setIsReviewModalOpen(true);
   };
+
+  const [pastBooks, setPastBooks] = useState([]);
+
+  useEffect(() => {
+    async function fetchPastBooks() {
+      try {
+        const response = await backend.get("/reservation/past");
+        setPastBooks(response.data);
+      } catch (error) {
+        console.error("Failed to fetch past books:", error);
+      }
+    }
+
+    fetchPastBooks();
+  }, []);
 
   // Function to apply the blue outline class
   const inputClassName = isEditable ? "input-editable" : "";
@@ -99,14 +129,23 @@ export default function DashboardPage() {
       >
         <CardBody>
           <div>
-            <h2 className="mb-3 text-2xl font-bold">Reserved Books</h2>
-            <h2 className="mb-6 text-2xl font-bold text-primary">3</h2>
-            <h3 className="text-lg font-bold">My Life</h3>
-            <p>By Sheerin, Brendan</p>
-            <h3 className="text-lg font-bold">My Life</h3>
-            <p>By Sheerin, Brendan</p>
-            <h3 className="text-lg font-bold">My Life</h3>
-            <p>By Sheerin, Brendan</p>
+            <h2 className="mb-3 text-2xl font-bold">Checked Out Books</h2>
+            <h2 className="mb-6 text-2xl font-bold text-primary">
+              {pastReservations?.length}
+            </h2>
+            {pastReservations?.length &&
+              pastReservations.map((reservation: any, index) => (
+                <div key={reservation.id}>
+                  <h3 className="text-lg font-bold">
+                    {reservation.book.title}
+                  </h3>
+                  <p className="text-sm">By, {reservation.author.name}</p>
+                  <p className="text-sm">{reservation.date}</p>
+                  {index !== pastReservations.length - 1 && (
+                    <hr className="my-2" />
+                  )}
+                </div>
+              ))}
           </div>
         </CardBody>
       </Card>
@@ -117,25 +156,22 @@ export default function DashboardPage() {
       >
         <CardBody>
           <div>
-            <h2 className="mb-3 text-2xl font-bold">Previous Books</h2>
-            <Button
-              type="button"
-              variant="solid"
-              color="primary"
-              // TODO: When clicked, pass correct book props to review modal
-              onClick={() =>
-                openReviewModal({
-                  isbn: 9780316029186,
-                  title: "The Witcher",
-                  author: "Andrzej Sapkowski",
-                })
-              }
-            >
-              Leave a Review
-            </Button>
-            <h2 className="mb-6 text-2xl font-bold text-primary">1</h2>
-            <h3 className="text-lg font-bold">My Life</h3>
-            <p>By Sheerin, Brendan</p>
+            <h2 className="mb-3 text-2xl font-bold">Past Books</h2>
+            <h2 className="mb-6 text-2xl font-bold text-primary">
+              {pastBooks?.length}
+            </h2>
+            {pastBooks?.length &&
+              pastBooks.map((book: any, index) => (
+                <div key={book.id}>
+                  <h3 className="text-lg font-bold">{book.book.title}</h3>
+                  <p className="text-sm">{book.author?.name}</p>
+                  <p className="text-sm">
+                    Expired On:{" "}
+                    {new Date(book.transaction.enddate).toLocaleDateString()}
+                  </p>
+                  {index !== pastBooks.length - 1 && <hr className="my-2" />}
+                </div>
+              ))}
           </div>
         </CardBody>
       </Card>
