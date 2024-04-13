@@ -1,7 +1,7 @@
 import { Button, ButtonGroup, Card, CardBody } from "@nextui-org/react";
-import BookDetails from "@/components/bookview";
 import BookCard from "@/components/bookcard";
 import SearchBar from "@/components/searchbar";
+import BookView from "@/components/bookview";
 
 export default function Home() {
   return (
@@ -11,20 +11,21 @@ export default function Home() {
     >
       <CardBody>
         <SearchBar></SearchBar>
-        <ButtonGroup>
+        <ButtonGroup className="mb-10">
           <Button variant="solid" color="danger">
-            Left
+            Author
           </Button>
           <Button variant="solid" color="danger">
-            Middle
+            Genre
           </Button>
           <Button variant="solid" color="danger">
-            Right
+            Title
           </Button>
         </ButtonGroup>
         <BookCard
           title={"My Life"}
           author={"John Doe"}
+          isbn={"1234"}
           coverImage={
             "https://cdn.builder.io/api/v1/image/assets/TEMP/84b3a59933528c79a2a5e7c646dbb5de37865cccb85cd94dd63bd58e72105edf?apiKey=d0e6c17cae514308933f9abcb88dd7ef&"
           }
@@ -33,6 +34,7 @@ export default function Home() {
         <BookCard
           title={"My Life"}
           author={"John Doe"}
+          isbn={"1234"}
           coverImage={
             "https://cdn.builder.io/api/v1/image/assets/TEMP/84b3a59933528c79a2a5e7c646dbb5de37865cccb85cd94dd63bd58e72105edf?apiKey=d0e6c17cae514308933f9abcb88dd7ef&"
           }
@@ -41,6 +43,7 @@ export default function Home() {
         <BookCard
           title={"My Life"}
           author={"John Doe"}
+          isbn={"1234"}
           coverImage={
             "https://cdn.builder.io/api/v1/image/assets/TEMP/84b3a59933528c79a2a5e7c646dbb5de37865cccb85cd94dd63bd58e72105edf?apiKey=d0e6c17cae514308933f9abcb88dd7ef&"
           }

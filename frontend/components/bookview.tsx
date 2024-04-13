@@ -1,7 +1,7 @@
 import { Button, Image } from "@nextui-org/react";
 import * as React from "react";
 
-interface BookDetailsProps {
+interface BookViewProps {
   isbn: string;
   genre: string;
   title: string;
@@ -10,7 +10,7 @@ interface BookDetailsProps {
   coverImage: string;
 }
 
-const BookDetails: React.FC<BookDetailsProps> = ({
+const BookView: React.FC<BookViewProps> = ({
   isbn,
   genre,
   title,
@@ -58,4 +58,4 @@ const BookDetails: React.FC<BookDetailsProps> = ({
   );
 };
 
-export default BookDetails;
+export default BookView;
