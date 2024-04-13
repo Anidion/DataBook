@@ -405,8 +405,6 @@ app.get("/book", async (req, res) => {
       return res.status(400).send("Missing required fields.");
     }
 
-    search = `%${search}%`;
-    console.log("search:", search);
     const book = await db
       .select()
       .from(schema.book)
