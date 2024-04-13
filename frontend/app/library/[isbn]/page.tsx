@@ -5,7 +5,7 @@ import BookView from "@/components/bookview";
 import { backend } from "@/services/axios";
 import { useEffect, useState } from "react";
 
-export default function Home({ isbn }: { isbn: string }) {
+export default function Home({  params: { isbn }}: {  params: { isbn: string }}) {
   const [book, setBook] = useState<any>(null);
 
   useEffect(() => {
