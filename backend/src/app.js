@@ -345,7 +345,7 @@ app.get("/admin/review", async (req, res) => {
 
 app.get("/library", async (req, res) => {
   try {
-    console.log("Received request at /book:", req.query);
+    console.log("Received request at /library:", req.query);
     let { search } = req.query;
 
     const db = DbService.getDb();
