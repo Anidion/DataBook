@@ -1,4 +1,6 @@
+// eslint-disable-next-line import/named
 import { drizzle } from "drizzle-orm/mysql2";
+import { migrate } from "drizzle-orm/mysql2/migrator";
 import mysql from "mysql2/promise";
 import * as schema from "../../db/schema.js";
 
@@ -18,8 +20,10 @@ export const DbService = {
       });
 
       db = drizzle(connection, { schema, mode: "mysql" });
+      await migrate(db, { migrationsFolder: "drizzle" });
       return db;
     } catch (err) {
+      console.error(err);
       throw new Error("Error connecting to the database:", err);
     }
   },

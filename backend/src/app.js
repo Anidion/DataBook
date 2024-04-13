@@ -7,7 +7,7 @@ import { AuthService } from "./services/auth.js";
 import { DbService } from "./services/db.js";
 import { UserService } from "./services/user.js";
 import { ErrorService } from "./services/error.js";
-import { desc, eq, and, lt } from "drizzle-orm";
+import { desc, eq, and, lt, isNull } from "drizzle-orm";
 import { BookService } from "./services/book.js";
 
 const app = express();
@@ -82,8 +82,8 @@ app.post("/review", async (req, res) => {
         .status(400)
         .send(
           ErrorService.handleError(
-            `Book with ISBN "${review.isbn}" doesn't exist in this library.`
-          )
+            `Book with ISBN "${review.isbn}" doesn't exist in this library.`,
+          ),
         );
     }
 
@@ -99,13 +99,13 @@ app.post("/review", async (req, res) => {
       .send(
         ErrorService.handleError(
           err,
-          "An error occurred while creating a review."
-        )
+          "An error occurred while creating a review.",
+        ),
       );
   }
 });
 
-// Get reviews for a given book
+// Get reviews for a given book or a given user
 app.get("/review", async (req, res) => {
   try {
     console.log("Received request at /review:", req.query);
@@ -124,7 +124,7 @@ app.get("/review", async (req, res) => {
         .leftJoin(schema.author, eq(schema.writtenby.author, schema.author.id))
         .leftJoin(
           schema.adminapproves,
-          eq(schema.review.id, schema.adminapproves.review)
+          eq(schema.review.id, schema.adminapproves.review),
         )
         .where(eq(schema.review.user, user.id))
         .orderBy(desc(schema.review.createdAt));
@@ -139,8 +139,8 @@ app.get("/review", async (req, res) => {
         .status(400)
         .send(
           ErrorService.handleError(
-            `Book with ISBN "${isbn}" doesn't exist in this library.`
-          )
+            `Book with ISBN "${isbn}" doesn't exist in this library.`,
+          ),
         );
     }
 
@@ -149,13 +149,13 @@ app.get("/review", async (req, res) => {
       .from(schema.review)
       .innerJoin(
         schema.adminapproves,
-        eq(schema.review.id, schema.adminapproves.review)
+        eq(schema.review.id, schema.adminapproves.review),
       )
       .where(
         and(
           eq(schema.review.isbn, isbn),
-          eq(schema.adminapproves.approved, true)
-        )
+          eq(schema.adminapproves.approved, true),
+        ),
       )
       .orderBy(desc(schema.review.createdAt));
 
@@ -169,8 +169,8 @@ app.get("/review", async (req, res) => {
       .send(
         ErrorService.handleError(
           err,
-          "An error occurred while fetching reviews."
-        )
+          "An error occurred while fetching reviews.",
+        ),
       );
   }
 });
@@ -201,8 +201,8 @@ app.delete("/review", async (req, res) => {
       .send(
         ErrorService.handleError(
           err,
-          "An error occurred while deleting a review."
-        )
+          "An error occurred while deleting a review.",
+        ),
       );
   }
 });
@@ -244,8 +244,8 @@ app.get("/reservation/past", async (req, res) => {
       .where(
         and(
           eq(schema.transaction.user, user.id),
-          lt(schema.transaction.enddate, new Date()) // Ensure endDate is before today
-        )
+          lt(schema.transaction.enddate, new Date()), // Ensure endDate is before today
+        ),
       )
       .orderBy(desc(schema.transaction.enddate));
 
@@ -255,6 +255,89 @@ app.get("/reservation/past", async (req, res) => {
     res.status(err.status || 500).send({
       error: "An error occurred while fetching past reservations.",
     });
+  }
+});
+
+// Approve or reject a review
+app.put("/admin/review", async (req, res) => {
+  try {
+    console.log("Received moderation request at /admin/review:", req.query);
+    const user = await UserService.getUserIfAuthorized(req, res);
+
+    if (!user.isAdmin) {
+      return res.status(401).send("User is not an admin.");
+    }
+
+    const { reviewId, approved } = req.query;
+    if (!Number(reviewId) || (approved !== "true" && approved !== "false")) {
+      return res.status(400).send("Missing required fields.");
+    }
+
+    const db = DbService.getDb();
+    await db.insert(schema.adminapproves).values({
+      admin: user.id,
+      review: Number(reviewId),
+      approved: approved === "true" ? 1 : 0,
+    });
+
+    return res.status(200).json({});
+  } catch (err) {
+    if (res.closed) {
+      return;
+    }
+    return res
+      .status(err.status || 500)
+      .send(
+        ErrorService.handleError(
+          err,
+          "An error occurred while approving a review.",
+        ),
+      );
+  }
+});
+
+// Get all non-approved reviews
+app.get("/admin/review", async (req, res) => {
+  try {
+    console.log("Received request at /admin/review:", req.query);
+    const user = await UserService.getUserIfAuthorized(req, res);
+
+    if (!user.isAdmin) {
+      return res.status(401).send("User is not an admin.");
+    }
+
+    const db = DbService.getDb();
+
+    const reviews = await db
+      .select({
+        review: schema.review,
+        book: schema.book,
+        author: schema.author,
+      })
+      .from(schema.review)
+      .innerJoin(schema.book, eq(schema.review.isbn, schema.book.isbn))
+      .leftJoin(schema.writtenby, eq(schema.book.isbn, schema.writtenby.isbn))
+      .leftJoin(schema.author, eq(schema.writtenby.author, schema.author.id))
+      .leftJoin(
+        schema.adminapproves,
+        eq(schema.review.id, schema.adminapproves.review),
+      )
+      .where(isNull(schema.adminapproves.approved))
+      .orderBy(desc(schema.review.createdAt));
+
+    res.status(200).json(reviews);
+  } catch (err) {
+    if (res.closed) {
+      return;
+    }
+    return res
+      .status(err.status || 500)
+      .send(
+        ErrorService.handleError(
+          err,
+          "An error occurred while fetching reviews.",
+        ),
+      );
   }
 });
 

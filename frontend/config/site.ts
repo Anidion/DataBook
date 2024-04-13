@@ -1,4 +1,3 @@
-import { useSWRConfig } from "swr";
 import { endSession } from "@/services/session";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { ScopedMutator } from "swr/dist/_internal";
@@ -21,6 +20,10 @@ export const siteConfig = {
       label: "Dashboard",
       href: "/dashboard",
     },
+    {
+      label: "Admin Dashboard",
+      href: "/admin",
+    },
   ],
   navMenuItems: [
     {
@@ -32,8 +35,17 @@ export const siteConfig = {
       href: "/dashboard",
     },
     {
+      label: "Admin Dashboard",
+      href: "/admin",
+      condition: (user: any) => {
+        console.log(user);
+        return user && user.isAdmin;
+      },
+    },
+    {
       label: "Logout",
       href: "/",
+      highlight: true,
       logout: async (router: AppRouterInstance, mutate: ScopedMutator) => {
         await endSession();
         mutate("/api/session");

@@ -3,8 +3,7 @@
 import { ReviewModal } from "@/components/ReviewModal";
 import { backend } from "@/services/axios";
 import { Book, StoredReview } from "@/types";
-import { Card, CardBody } from "@nextui-org/react";
-import { Button, Input } from "@nextui-org/react";
+import { Card, CardBody, Button, Input } from "@nextui-org/react";
 import React, { useEffect, useState } from "react";
 
 export default function DashboardPage() {
@@ -118,7 +117,7 @@ export default function DashboardPage() {
             </div>
             <div className="text-center">
               <h3 className="text-lg font-semibold">Reviewed</h3>
-              <p className="text-primary">2</p>
+              <p className="text-primary">{pastReviews?.length}</p>
             </div>
           </div>
         </CardBody>
@@ -187,7 +186,7 @@ export default function DashboardPage() {
             <h2 className="mb-6 text-2xl font-bold text-primary">
               {pastReviews?.length}
             </h2>
-            {pastReviews?.length &&
+            {!!pastReviews?.length &&
               pastReviews.map((review: StoredReview, index) => (
                 <div key={review.review.id}>
                   <h3 className="text-lg font-bold">{review.book.title}</h3>
@@ -195,9 +194,7 @@ export default function DashboardPage() {
                   <p>{"⭐".repeat(Number(review.review.rating))}</p>
                   <p>&quot;{review.review.content}&quot;</p>
                   <p className="text-sm">
-                    {review.adminapproves.approved
-                      ? "Approved"
-                      : "Pending Approval"}
+                    {review.adminapproves ? "Approved" : "Pending Approval"}
                   </p>
                   {index !== pastReviews.length - 1 && <hr className="my-2" />}
                 </div>

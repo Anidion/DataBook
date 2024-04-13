@@ -10,7 +10,7 @@ import {
   NavbarItem,
   NavbarMenuItem,
 } from "@nextui-org/navbar";
-import { Button } from "@nextui-org/button";
+
 import { Link } from "@nextui-org/link";
 
 import { link as linkStyles } from "@nextui-org/theme";
@@ -69,9 +69,9 @@ export const Navbar = () => {
         {isLoading ? (
           <Spinner size="sm" color="secondary" />
         ) : user && Object.keys(user).length ? (
-          `Logged in as ${user.username}`
+          <p className="whitespace-nowrap text-xs">{user.username}</p>
         ) : (
-          "Logged Out"
+          ""
         )}
       </NavbarContent>
 
@@ -89,13 +89,7 @@ export const Navbar = () => {
             item?.condition && !item?.condition(user) ? null : (
               <NavbarMenuItem key={`${item}-${index}`}>
                 <Link
-                  color={
-                    index === 2
-                      ? "primary"
-                      : index === siteConfig.navMenuItems.length - 1
-                        ? "danger"
-                        : "foreground"
-                  }
+                  color={item.highlight ? "danger" : "foreground"}
                   href={item.href ?? "#"}
                   onClick={
                     item.logout
