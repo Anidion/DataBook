@@ -397,7 +397,7 @@ app.get("/library", async (req, res) => {
 app.get("/book", async (req, res) => {
   try {
     console.log("Received request at /book:", req.query);
-    let { search } = req.query;
+    let { isbn } = req.query;
 
     const db = DbService.getDb();
 
