@@ -5,14 +5,18 @@ import BookView from "@/components/bookview";
 import { backend } from "@/services/axios";
 import { useEffect, useState } from "react";
 
-export default function Home({  params: { isbn }}: {  params: { isbn: string }}) {
+export default function Home({
+  params: { isbn },
+}: {
+  params: { isbn: string };
+}) {
   const [book, setBook] = useState<any>(null);
 
   useEffect(() => {
     const fetchBook = async () => {
       try {
         const response = await backend.get("/book", { params: { isbn: isbn } });
-        setBook(response.data);
+        setBook(response.data[0]);
       } catch (error) {
         console.error("Failed to fetch book:", error);
       }
@@ -23,7 +27,7 @@ export default function Home({  params: { isbn }}: {  params: { isbn: string }})
 
   return (
     <>
-      <a href="javascript:history.go(-1)">
+      <a href="/library">
         <button type="button">Back to Library</button>
       </a>
       <Card
@@ -34,11 +38,11 @@ export default function Home({  params: { isbn }}: {  params: { isbn: string }})
           {book ? (
             <BookView
               isbn={isbn}
-              genre={book.genre}
-              title={book.title}
-              author={book.author}
-              description={book.description}
-              coverImage={book.coverImage || "/img/library.jpg"}
+              genre={book.genre?.name}
+              title={book.book?.title}
+              author={book.author?.name}
+              description={book.book?.description}
+              coverImage={book.book?.coverUrl || "/img/library.jpg"}
             />
           ) : (
             <p>Loading book...</p>

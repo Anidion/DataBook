@@ -8,7 +8,7 @@ import { DbService } from "./services/db.js";
 import { UserService } from "./services/user.js";
 import { ErrorService } from "./services/error.js";
 
-import { desc, eq, or, like, and, isNull } from "drizzle-orm";
+import { desc, eq, lt, or, like, and, isNull } from "drizzle-orm";
 
 import { BookService } from "./services/book.js";
 
@@ -415,9 +415,7 @@ app.get("/book", async (req, res) => {
       return res
         .status(400)
         .send(
-          ErrorService.handleError(
-            `"${isbn}" doesn't exist in this library.`,
-          ),
+          ErrorService.handleError(`"${isbn}" doesn't exist in this library.`),
         );
     }
 
