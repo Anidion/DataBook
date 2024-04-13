@@ -58,8 +58,14 @@ export default function DashboardPage() {
 
   const [pastReservations, setPastReservations] = useState<[any] | []>([]);
 
-  const openReviewModal = (book: Book) => {
-    setBookForReview(book);
+  const openReviewModal = (transaction: any) => {
+    const formattedBook = {
+      isbn: transaction.book.isbn,
+      title: transaction.book.title,
+      author: transaction.author.name,
+    };
+
+    setBookForReview(formattedBook);
     setIsReviewModalOpen(true);
   };
 
@@ -133,7 +139,7 @@ export default function DashboardPage() {
             <h2 className="mb-6 text-2xl font-bold text-primary">
               {pastReservations?.length}
             </h2>
-            {pastReservations?.length &&
+            {!!pastReservations?.length &&
               pastReservations.map((reservation: any, index) => (
                 <div key={reservation.id}>
                   <h3 className="text-lg font-bold">
@@ -160,7 +166,7 @@ export default function DashboardPage() {
             <h2 className="mb-6 text-2xl font-bold text-primary">
               {pastBooks?.length}
             </h2>
-            {pastBooks?.length &&
+            {!!pastBooks?.length &&
               pastBooks.map((book: any, index) => (
                 <div key={book.id}>
                   <h3 className="text-lg font-bold">{book.book.title}</h3>
@@ -169,6 +175,16 @@ export default function DashboardPage() {
                     Expired On:{" "}
                     {new Date(book.transaction.enddate).toLocaleDateString()}
                   </p>
+                  <Button
+                    color="primary"
+                    size="sm"
+                    variant="ghost"
+                    type="button"
+                    className="mt-2"
+                    onClick={() => openReviewModal(book)}
+                  >
+                    Leave a Review
+                  </Button>
                   {index !== pastBooks.length - 1 && <hr className="my-2" />}
                 </div>
               ))}
