@@ -32,7 +32,7 @@ const BookCard: React.FC<BookProps> = ({
           <div className="flex flex-col text-base text-black max-md:mt-10">
             <Link
               href={`/library/${isbn}`}
-              className="mt-3 text-center text-2xl font-bold leading-5 text-foreground max-md:ml-2.5 max-md:text-3xl"
+              className="mt-3 text-center text-2xl font-bold leading-5 text-foreground max-md:ml-2.5 max-md:text-3xl md:text-left"
             >
               {title}
             </Link>
