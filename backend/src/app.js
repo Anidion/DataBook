@@ -412,7 +412,7 @@ app.get("/book", async (req, res) => {
       .from(schema.book)
       .leftJoin(schema.writtenby, eq(schema.book.isbn, schema.writtenby.isbn))
       .leftJoin(schema.author, eq(schema.writtenby.author, schema.author.id))
-      .where(like(schema.book.isbn, search));
+      .where(eq(schema.book.isbn, isbn));
     if (!book) {
       return res
         .status(400)
