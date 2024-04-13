@@ -435,6 +435,104 @@ app.get("/book", async (req, res) => {
   }
 });
 
+app.post("/reservation", async (req, res) => {
+  try {
+    console.log("Received request at /reservation:", req.body, req.cookies);
+    const user = await UserService.getUserIfAuthorized(req, res);
+    console.log("user authed:", user);
+    const { isbn } = req.body;
+
+    if (!isbn) {
+      return res.status(400).send("Missing required fields.");
+    }
+
+    const db = DbService.getDb();
+
+    const book = await BookService.getBookIfExists(isbn);
+
+    if (!book) {
+      return res
+        .status(400)
+        .send(
+          ErrorService.handleError(
+            `Book with ISBN "${isbn}" doesn't exist in this library.`,
+          ),
+        );
+    }
+
+    await db.insert(schema.reservation).values({
+      user: user.id,
+      isbn,
+    });
+
+    res.status(200).json({});
+  } catch (err) {
+    if (res.closed) {
+      return;
+    }
+    return res
+      .status(err.status || 500)
+      .send(
+        ErrorService.handleError(
+          err,
+          "An error occurred while creating a reservation.",
+        ),
+      );
+  }
+});
+
+app.post("/transaction", async (req, res) => {
+  try {
+    console.log("Received request at /transaction:", req.body, req.cookies);
+    const user = await UserService.getUserIfAuthorized(req, res);
+    console.log("user authed:", user);
+    const { isbn } = req.body;
+
+    if (!isbn) {
+      return res.status(400).send("Missing required fields.");
+    }
+
+    const db = DbService.getDb();
+
+    const book = await BookService.getBookIfExists(isbn);
+
+    if (!book) {
+      return res
+        .status(400)
+        .send(
+          ErrorService.handleError(
+            `Book with ISBN "${isbn}" doesn't exist in this library.`,
+          ),
+        );
+    }
+
+    const startdate = new Date();
+    // Set end date to 14 days from now for 2-week loans
+    const enddate = new Date(new Date().setDate(startdate.getDate() + 14));
+
+    await db.insert(schema.transaction).values({
+      user: user.id,
+      isbn,
+      startdate,
+      enddate,
+    });
+
+    res.status(200).json({});
+  } catch (err) {
+    if (res.closed) {
+      return;
+    }
+    return res
+      .status(err.status || 500)
+      .send(
+        ErrorService.handleError(
+          err,
+          "An error occurred while creating a transaction.",
+        ),
+      );
+  }
+});
+
 app.get;
 
 const port = 3001;
