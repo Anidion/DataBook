@@ -58,8 +58,14 @@ export default function DashboardPage() {
 
   const [pastReservations, setPastReservations] = useState<[any] | []>([]);
 
-  const openReviewModal = (book: Book) => {
-    setBookForReview(book);
+  const openReviewModal = (transaction: any) => {
+    const formattedBook = {
+      isbn: transaction.book.isbn,
+      title: transaction.book.title,
+      author: transaction.author.name,
+    };
+
+    setBookForReview(formattedBook);
     setIsReviewModalOpen(true);
   };
 
@@ -96,7 +102,7 @@ export default function DashboardPage() {
           <div>
             <h2 className="mb-3 text-center text-2xl font-bold">Total Books</h2>
             <h2 className="mb-6 text-center text-2xl font-bold text-primary">
-              6
+              {pastBooks?.length + pastReservations?.length}
             </h2>
           </div>
 
@@ -108,15 +114,15 @@ export default function DashboardPage() {
 
           <div className="flex justify-between">
             <div className="text-center">
-              <h3 className="text-lg font-semibold">Reserved</h3>
-              <p className="text-primary">3</p>
+              <h3 className="text-lg font-semibold">Checked Out</h3>
+              <p className="text-primary">{pastReservations?.length}</p>
             </div>
             <div className="text-center">
               <h3 className="text-lg font-semibold">Previous</h3>
-              <p className="text-primary">1</p>
+              <p className="text-primary">{pastBooks?.length}</p>
             </div>
             <div className="text-center">
-              <h3 className="text-lg font-semibold">Reviewed</h3>
+              <h3 className="text-lg font-semibold">Reviews</h3>
               <p className="text-primary">{pastReviews?.length}</p>
             </div>
           </div>
@@ -133,7 +139,7 @@ export default function DashboardPage() {
             <h2 className="mb-6 text-2xl font-bold text-primary">
               {pastReservations?.length}
             </h2>
-            {pastReservations?.length &&
+            {!!pastReservations?.length &&
               pastReservations.map((reservation: any, index) => (
                 <div key={reservation.id}>
                   <h3 className="text-lg font-bold">
@@ -160,7 +166,7 @@ export default function DashboardPage() {
             <h2 className="mb-6 text-2xl font-bold text-primary">
               {pastBooks?.length}
             </h2>
-            {pastBooks?.length &&
+            {!!pastBooks?.length &&
               pastBooks.map((book: any, index) => (
                 <div key={book.id}>
                   <h3 className="text-lg font-bold">{book.book.title}</h3>
@@ -169,6 +175,16 @@ export default function DashboardPage() {
                     Expired On:{" "}
                     {new Date(book.transaction.enddate).toLocaleDateString()}
                   </p>
+                  <Button
+                    color="primary"
+                    size="sm"
+                    variant="ghost"
+                    type="button"
+                    className="mt-2"
+                    onClick={() => openReviewModal(book)}
+                  >
+                    Leave a Review
+                  </Button>
                   {index !== pastBooks.length - 1 && <hr className="my-2" />}
                 </div>
               ))}
@@ -182,7 +198,7 @@ export default function DashboardPage() {
       >
         <CardBody>
           <div>
-            <h2 className="mb-3 text-2xl font-bold">Reviewed Books</h2>
+            <h2 className="mb-3 text-2xl font-bold">Reviews</h2>
             <h2 className="mb-6 text-2xl font-bold text-primary">
               {pastReviews?.length}
             </h2>
