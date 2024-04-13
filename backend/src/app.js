@@ -7,7 +7,9 @@ import { AuthService } from "./services/auth.js";
 import { DbService } from "./services/db.js";
 import { UserService } from "./services/user.js";
 import { ErrorService } from "./services/error.js";
-import { desc, eq, and, lt, isNull } from "drizzle-orm";
+
+import { desc, eq, lt, or, like, and, isNull } from "drizzle-orm";
+
 import { BookService } from "./services/book.js";
 
 const app = express();
@@ -340,6 +342,100 @@ app.get("/admin/review", async (req, res) => {
       );
   }
 });
+
+app.get("/library", async (req, res) => {
+  try {
+    console.log("Received request at /library:", req.query);
+    let { search } = req.query;
+
+    const db = DbService.getDb();
+
+    if (!search) {
+      return res.status(400).send("Missing required fields.");
+    }
+
+    search = `%${search}%`;
+    console.log("search:", search);
+    const books = await db
+      .select()
+      .from(schema.book)
+      .leftJoin(schema.writtenby, eq(schema.book.isbn, schema.writtenby.isbn))
+      .leftJoin(schema.author, eq(schema.writtenby.author, schema.author.id))
+      .where(
+        or(
+          like(schema.book.title, search),
+          like(schema.author.name, search),
+          like(schema.book.isbn, search),
+        ),
+      );
+    if (!books) {
+      return res
+        .status(400)
+        .send(
+          ErrorService.handleError(
+            `"${search}" doesn't exist in this library.`,
+          ),
+        );
+    }
+
+    res.status(200).json(books);
+  } catch (err) {
+    if (res.closed) {
+      return;
+    }
+    return res
+      .status(err.status || 500)
+      .send(
+        ErrorService.handleError(
+          err,
+          "An error occurred while fetching books.",
+        ),
+      );
+  }
+});
+
+app.get("/book", async (req, res) => {
+  try {
+    console.log("Received request at /book:", req.query);
+    let { isbn } = req.query;
+
+    const db = DbService.getDb();
+
+    if (!isbn) {
+      return res.status(400).send("Missing required fields.");
+    }
+
+    const book = await db
+      .select()
+      .from(schema.book)
+      .leftJoin(schema.writtenby, eq(schema.book.isbn, schema.writtenby.isbn))
+      .leftJoin(schema.author, eq(schema.writtenby.author, schema.author.id))
+      .where(eq(schema.book.isbn, isbn));
+    if (!book) {
+      return res
+        .status(400)
+        .send(
+          ErrorService.handleError(`"${isbn}" doesn't exist in this library.`),
+        );
+    }
+
+    res.status(200).json(book);
+  } catch (err) {
+    if (res.closed) {
+      return;
+    }
+    return res
+      .status(err.status || 500)
+      .send(
+        ErrorService.handleError(
+          err,
+          "An error occurred while fetching books.",
+        ),
+      );
+  }
+});
+
+app.get;
 
 const port = 3001;
 

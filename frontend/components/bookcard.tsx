@@ -1,15 +1,24 @@
 import { Image } from "@nextui-org/react";
+import Link from "next/link";
 import * as React from "react";
 
 interface BookProps {
   title: string;
   author: string;
   coverImage: string;
+  isbn: string;
+  book: any;
 }
 
-const BookCard: React.FC<BookProps> = ({ title, author, coverImage }) => {
+const BookCard: React.FC<BookProps> = ({
+  title,
+  author,
+  coverImage,
+  isbn,
+  book,
+}) => {
   return (
-    <article className="margin:20px max-w-[550px] rounded-2xl bg-zinc-300 px-5 py-5 shadow-sm max-md:px-5">
+    <article className="margin:20px mb-10 max-w-[550px] rounded-2xl bg-zinc-300 px-5 py-5 shadow-sm max-md:px-5">
       <div className="flex gap-5 max-md:flex-col max-md:gap-0">
         <div className="flex w-[33%] flex-col max-md:ml-0 max-md:w-full">
           <Image
@@ -21,9 +30,12 @@ const BookCard: React.FC<BookProps> = ({ title, author, coverImage }) => {
         </div>
         <div className="ml-5 flex w-[67%] flex-col max-md:ml-0 max-md:w-full">
           <div className="flex flex-col text-base text-black max-md:mt-10">
-            <h2 className="text-ellipsis text-center text-3xl leading-5">
+            <Link
+              href={`/library/${isbn}`}
+              className="text-ellipsis text-center text-3xl leading-5"
+            >
               {title}
-            </h2>
+            </Link>
             <p>by {author}</p>
             <button className="mt-8 items-center justify-center whitespace-nowrap rounded-xl bg-rose-600 px-4 py-2 font-medium leading-[150%] text-black shadow-sm max-md:px-5">
               Reserve
