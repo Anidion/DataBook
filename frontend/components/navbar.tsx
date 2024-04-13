@@ -69,9 +69,9 @@ export const Navbar = () => {
         {isLoading ? (
           <Spinner size="sm" color="secondary" />
         ) : user && Object.keys(user).length ? (
-          `Logged in as ${user.username}`
+          <p className="whitespace-nowrap text-xs">{user.username}</p>
         ) : (
-          "Logged Out"
+          ""
         )}
       </NavbarContent>
 

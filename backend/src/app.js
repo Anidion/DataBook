@@ -7,7 +7,9 @@ import { AuthService } from "./services/auth.js";
 import { DbService } from "./services/db.js";
 import { UserService } from "./services/user.js";
 import { ErrorService } from "./services/error.js";
+
 import { desc, eq, or, like, and, isNull } from "drizzle-orm";
+
 import { BookService } from "./services/book.js";
 
 const app = express();
@@ -204,6 +206,57 @@ app.delete("/review", async (req, res) => {
           "An error occurred while deleting a review.",
         ),
       );
+  }
+});
+
+app.get("/reservation", async (req, res) => {
+  try {
+    console.log("Received request at /reservation:", req.query);
+    const user = await UserService.getUserIfAuthorized(req, res);
+    console.log("user authed:", user);
+    const db = DbService.getDb();
+    const result = await db
+      .select()
+      .from(schema.reservation)
+      .innerJoin(schema.book, eq(schema.book.isbn, schema.reservation.isbn))
+      .leftJoin(schema.writtenby, eq(schema.book.isbn, schema.writtenby.isbn))
+      .leftJoin(schema.author, eq(schema.writtenby.author, schema.author.id))
+      .where(eq(schema.reservation.user, user.id))
+      .orderBy(desc(schema.reservation.createdAt));
+    console.log("Returning:", result);
+    res.send(result);
+  } catch (err) {
+    console.error("Error fetching reservations:", err);
+    res.status(err);
+  }
+});
+
+app.get("/reservation/past", async (req, res) => {
+  try {
+    const user = await UserService.getUserIfAuthorized(req, res);
+    const db = DbService.getDb();
+    // const today = new Date().toISOString();
+
+    const pastReservations = await db
+      .select()
+      .from(schema.transaction)
+      .innerJoin(schema.book, eq(schema.book.isbn, schema.transaction.isbn))
+      .leftJoin(schema.writtenby, eq(schema.book.isbn, schema.writtenby.isbn))
+      .leftJoin(schema.author, eq(schema.writtenby.author, schema.author.id))
+      .where(
+        and(
+          eq(schema.transaction.user, user.id),
+          lt(schema.transaction.enddate, new Date()), // Ensure endDate is before today
+        ),
+      )
+      .orderBy(desc(schema.transaction.enddate));
+
+    res.status(200).json(pastReservations);
+  } catch (err) {
+    console.error("Error fetching past reservations:", err);
+    res.status(err.status || 500).send({
+      error: "An error occurred while fetching past reservations.",
+    });
   }
 });
 
