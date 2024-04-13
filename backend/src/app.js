@@ -8,7 +8,7 @@ import { DbService } from "./services/db.js";
 import { UserService } from "./services/user.js";
 import { ErrorService } from "./services/error.js";
 
-import { desc, eq, lt, or, like, and, isNull } from "drizzle-orm";
+import { desc, eq, lt, or, like, and, isNull, inArray, sql } from "drizzle-orm";
 
 import { BookService } from "./services/book.js";
 
@@ -356,29 +356,58 @@ app.get("/library", async (req, res) => {
 
     search = `%${search}%`;
     console.log("search:", search);
-    const books = await db
-      .select()
+    const results = await db
+      .select({ book: schema.book, author: schema.author, genre: schema.genre })
       .from(schema.book)
       .leftJoin(schema.writtenby, eq(schema.book.isbn, schema.writtenby.isbn))
       .leftJoin(schema.author, eq(schema.writtenby.author, schema.author.id))
+      .leftJoin(
+        schema.bookisgenre,
+        eq(schema.book.isbn, schema.bookisgenre.isbn),
+      )
+      .leftJoin(schema.genre, eq(schema.bookisgenre.genre, schema.genre.id))
       .where(
         or(
           like(schema.book.title, search),
           like(schema.author.name, search),
           like(schema.book.isbn, search),
+          like(schema.genre.name, search),
         ),
       );
-    if (!books) {
-      return res
-        .status(400)
-        .send(
-          ErrorService.handleError(
-            `"${search}" doesn't exist in this library.`,
-          ),
-        );
+
+    if (!results || !results.length) {
+      return res.status(200).json([]);
     }
 
-    res.status(200).json(books);
+    const booksWithGenres = results.map((result) => {
+      console.log("book:", result);
+      console.log(
+        "this results genres:",
+        results
+          .filter((r) => r.book.isbn === result.book.isbn)
+          .map((r) => r.genre),
+      );
+      const bookWithGenre = {
+        ...result,
+        genres: results
+          .filter((r) => r.book.isbn === result.book.isbn)
+          .map((r) => r.genre),
+      };
+      delete bookWithGenre.genre;
+      console.log("bookWithGenre:", bookWithGenre);
+      return bookWithGenre;
+    });
+
+    // Deduplicate books
+    const seen = new Set();
+
+    const booksWithGenresDeduped = booksWithGenres.filter((book) => {
+      const duplicate = seen.has(book.book.isbn);
+      seen.add(book.book.isbn);
+      return !duplicate;
+    });
+
+    res.status(200).json(booksWithGenresDeduped);
   } catch (err) {
     if (res.closed) {
       return;
@@ -406,12 +435,18 @@ app.get("/book", async (req, res) => {
     }
 
     const book = await db
-      .select()
+      .select({ book: schema.book, author: schema.author, genre: schema.genre })
       .from(schema.book)
       .leftJoin(schema.writtenby, eq(schema.book.isbn, schema.writtenby.isbn))
       .leftJoin(schema.author, eq(schema.writtenby.author, schema.author.id))
+      .leftJoin(
+        schema.bookisgenre,
+        eq(schema.book.isbn, schema.bookisgenre.isbn),
+      )
+      .leftJoin(schema.genre, eq(schema.bookisgenre.genre, schema.genre.id))
       .where(eq(schema.book.isbn, isbn));
-    if (!book) {
+
+    if (!book || !book.length) {
       return res
         .status(400)
         .send(
@@ -419,7 +454,13 @@ app.get("/book", async (req, res) => {
         );
     }
 
-    res.status(200).json(book);
+    const bookWithGenres = {
+      ...book[0],
+      genres: book.map((b) => b.genre),
+    };
+    delete bookWithGenres.genre;
+
+    res.status(200).json(bookWithGenres);
   } catch (err) {
     if (res.closed) {
       return;
@@ -435,7 +476,126 @@ app.get("/book", async (req, res) => {
   }
 });
 
-app.get;
+// Get genres user likes
+app.get("/genre", async (req, res) => {
+  try {
+    console.log("Received request at /genre:", req.query);
+    const user = await UserService.getUserIfAuthorized(req, res);
+
+    const db = DbService.getDb();
+    const results = await db
+      .select({ genre: schema.genre })
+      .from(schema.userlikes)
+      .innerJoin(schema.genre, eq(schema.userlikes.genre, schema.genre.id))
+      .where(eq(schema.userlikes.user, user.id));
+
+    res.status(200).json(results);
+  } catch (err) {
+    if (res.closed) {
+      return;
+    }
+    return res
+      .status(err.status || 500)
+      .send(
+        ErrorService.handleError(
+          err,
+          "An error occurred while fetching genres.",
+        ),
+      );
+  }
+});
+
+app.get("/genre/all", async (req, res) => {
+  try {
+    console.log("Received request at /genre/all");
+
+    const db = DbService.getDb();
+    const results = await db.select().from(schema.genre);
+
+    res.status(200).json(results);
+  } catch (err) {
+    if (res.closed) {
+      return;
+    }
+    return res
+      .status(err.status || 500)
+      .send(
+        ErrorService.handleError(
+          err,
+          "An error occurred while fetching genres.",
+        ),
+      );
+  }
+});
+
+app.put("/genre", async (req, res) => {
+  try {
+    console.log("Received request at /genre:", req.body);
+    const user = await UserService.getUserIfAuthorized(req, res);
+    const { genres } = req.body;
+
+    if (!genres) {
+      return res.status(400).send("Missing required fields.");
+    }
+
+    const db = DbService.getDb();
+
+    const genreIdsToDelete = Object.entries(genres)
+      .filter(([id, selected]) => selected === false && id)
+      .map(([id]) => Number(id));
+
+    const genreIdsToInsert = Object.entries(genres)
+      .filter(([id, selected]) => selected === true && id)
+      .map(([id]) => Number(id));
+
+    console.log("genreIdsToDelete:", genreIdsToDelete);
+    console.log("genreIdsToInsert:", genreIdsToInsert);
+
+    if (genreIdsToDelete.length) {
+      await db
+        .delete(schema.userlikes)
+        .where(
+          and(
+            eq(schema.userlikes.user, user.id),
+            inArray(schema.userlikes.genre, genreIdsToDelete),
+          ),
+        );
+    }
+
+    if (genreIdsToInsert.length) {
+      await db
+        .insert(schema.userlikes)
+        .values(
+          genreIdsToInsert.map((genreId) => ({
+            user: user.id,
+            genre: genreId,
+          })),
+        )
+        .onDuplicateKeyUpdate({ set: { user: sql`user` } }); // If the user already likes a genre, do nothing
+    }
+
+    // Return updated list of likes
+    const results = await db
+      .select({ genre: schema.genre })
+      .from(schema.userlikes)
+      .innerJoin(schema.genre, eq(schema.userlikes.genre, schema.genre.id))
+      .where(eq(schema.userlikes.user, user.id));
+
+    res.status(200).json(results);
+  } catch (err) {
+    if (res.closed) {
+      return;
+    }
+    return res
+      .status(err.status || 500)
+      .send(
+        ErrorService.handleError(
+          err,
+          "An error occurred while updating genres.",
+        ),
+      );
+  }
+});
 
 const port = 3001;
 

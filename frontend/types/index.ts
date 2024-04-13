@@ -23,3 +23,8 @@ export type StoredReview = {
     approved: boolean;
   };
 };
+
+export interface Genre {
+  id: number;
+  name: string;
+}

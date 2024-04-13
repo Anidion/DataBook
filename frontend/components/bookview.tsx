@@ -1,9 +1,10 @@
+import { Genre } from "@/types";
 import { Button, Image } from "@nextui-org/react";
 import * as React from "react";
 
 interface BookViewProps {
   isbn: string;
-  genre: string;
+  genres: Genre[];
   title: string;
   author: string;
   description: string;
@@ -12,7 +13,7 @@ interface BookViewProps {
 
 const BookView: React.FC<BookViewProps> = ({
   isbn,
-  genre,
+  genres,
   title,
   author,
   description,
@@ -35,8 +36,13 @@ const BookView: React.FC<BookViewProps> = ({
         </p>
       </div>
       <div className="mt-2.5">
-        <h4 className="text-sm">ISBN: {isbn}</h4>
-        {genre && <h4>Genre: {genre}</h4>}
+        {genres && genres?.length && (
+          <h4>
+            Genre{genres.length > 1 ? "s" : ""}:{" "}
+            {genres.map((g) => g.name).join(", ")}
+          </h4>
+        )}
+        <p className="text-sm">ISBN: {isbn}</p>
       </div>
       <div>
         <p className="md-5 mb-5 mt-5 w-full text-center text-sm leading-6 text-foreground max-md:mt-5 max-md:max-w-full">

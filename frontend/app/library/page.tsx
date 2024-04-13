@@ -1,16 +1,7 @@
 "use client";
 
-import {
-  Button,
-  ButtonGroup,
-  Card,
-  CardBody,
-  Input,
-  Spinner,
-} from "@nextui-org/react";
+import { Button, Card, CardBody, Input, Spinner } from "@nextui-org/react";
 import BookCard from "@/components/bookcard";
-import SearchBar from "@/components/searchbar";
-import BookView from "@/components/bookview";
 import { FormEvent, useState } from "react";
 import { backend } from "@/services/axios";
 
@@ -38,12 +29,9 @@ export default function Home() {
 
   return (
     <>
-      <Card
-        className="my-auto px-4 py-8 md:mx-auto md:w-[50%] md:py-10"
-        radius="lg"
-      >
+      <Card className="py-4 md:mx-auto md:w-[50%]" radius="lg">
         <CardBody>
-          <div className="mx-auto w-full max-w-xl p-2 text-xl">
+          <div className="mx-auto w-full max-w-xl p-2">
             <h1 className="text-center text-2xl font-bold">Find a Book</h1>
             <form
               className="flex w-full"
@@ -52,7 +40,7 @@ export default function Home() {
               <Input
                 type="text"
                 className="w-full p-4 text-gray-900 placeholder-gray-400"
-                placeholder="Search"
+                placeholder="Search for books by title, author, or genre"
                 isDisabled={isLoading}
                 onChange={(event) => setQuery(event.target.value)}
                 endContent={
