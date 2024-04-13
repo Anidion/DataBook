@@ -416,7 +416,7 @@ app.get("/book", async (req, res) => {
         .status(400)
         .send(
           ErrorService.handleError(
-            `"${search}" doesn't exist in this library.`,
+            `"${isbn}" doesn't exist in this library.`,
           ),
         );
     }
