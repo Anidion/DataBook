@@ -401,7 +401,7 @@ app.get("/book", async (req, res) => {
 
     const db = DbService.getDb();
 
-    if (!search) {
+    if (!isbn) {
       return res.status(400).send("Missing required fields.");
     }
 
