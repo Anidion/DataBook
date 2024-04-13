@@ -9,8 +9,7 @@ export default function Home() {
       <div className="-z-1 absolute inset-0 opacity-40">
         <Image
           src={libraryImage}
-          layout="fill"
-          objectFit="cover"
+          className="h-full w-full object-cover"
           quality={100}
           alt=""
         />
