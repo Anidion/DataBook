@@ -208,20 +208,25 @@ app.delete("/review", async (req, res) => {
 });
 
 app.get("/reservation", async (req, res) => {
-  console.log("Received request at /reservation:", req.query);
-  const user = await UserService.getUserIfAuthorized(req, res);
-  console.log("user authed:", user);
-  const db = DbService.getDb();
-  const result = await db
-    .select()
-    .from(schema.reservation)
-    .innerJoin(schema.book, eq(schema.book.isbn, schema.reservation.isbn))
-    .leftJoin(schema.writtenby, eq(schema.book.isbn, schema.writtenby.isbn))
-    .leftJoin(schema.author, eq(schema.writtenby.author, schema.author.id))
-    .where(eq(schema.reservation.user, user.id))
-    .orderBy(desc(schema.reservation.createdAt));
-  console.log("Returning:", result);
-  res.send(result);
+  try {
+    console.log("Received request at /reservation:", req.query);
+    const user = await UserService.getUserIfAuthorized(req, res);
+    console.log("user authed:", user);
+    const db = DbService.getDb();
+    const result = await db
+      .select()
+      .from(schema.reservation)
+      .innerJoin(schema.book, eq(schema.book.isbn, schema.reservation.isbn))
+      .leftJoin(schema.writtenby, eq(schema.book.isbn, schema.writtenby.isbn))
+      .leftJoin(schema.author, eq(schema.writtenby.author, schema.author.id))
+      .where(eq(schema.reservation.user, user.id))
+      .orderBy(desc(schema.reservation.createdAt));
+    console.log("Returning:", result);
+    res.send(result);
+  } catch (err) {
+    console.error("Error fetching reservations:", err);
+    res.status(err);
+  }
 });
 
 app.get("/reservation/past", async (req, res) => {

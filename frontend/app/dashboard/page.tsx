@@ -46,9 +46,13 @@ export default function DashboardPage() {
 
   useEffect(() => {
     async function fetchPastReservations() {
-      const usersReservations = await backend.get("/reservation");
-      console.log(usersReservations.data);
-      setPastReservations(usersReservations.data);
+      try {
+        const usersReservations = await backend.get("/reservation");
+        console.log(usersReservations.data);
+        setPastReservations(usersReservations.data);
+      } catch (error) {
+        console.log("Failed to fetch past reservations", error);
+      }
     }
     fetchPastReservations();
   }, []);
