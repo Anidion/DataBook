@@ -38,7 +38,6 @@ export const siteConfig = {
       label: "Admin Dashboard",
       href: "/admin",
       condition: (user: any) => {
-        console.log(user);
         return user && user.isAdmin;
       },
     },

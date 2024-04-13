@@ -102,7 +102,7 @@ export default function DashboardPage() {
           <div>
             <h2 className="mb-3 text-center text-2xl font-bold">Total Books</h2>
             <h2 className="mb-6 text-center text-2xl font-bold text-primary">
-              6
+              {pastBooks?.length + pastReservations?.length}
             </h2>
           </div>
 
@@ -114,15 +114,15 @@ export default function DashboardPage() {
 
           <div className="flex justify-between">
             <div className="text-center">
-              <h3 className="text-lg font-semibold">Reserved</h3>
-              <p className="text-primary">3</p>
+              <h3 className="text-lg font-semibold">Checked Out</h3>
+              <p className="text-primary">{pastReservations?.length}</p>
             </div>
             <div className="text-center">
               <h3 className="text-lg font-semibold">Previous</h3>
-              <p className="text-primary">1</p>
+              <p className="text-primary">{pastBooks?.length}</p>
             </div>
             <div className="text-center">
-              <h3 className="text-lg font-semibold">Reviewed</h3>
+              <h3 className="text-lg font-semibold">Reviews</h3>
               <p className="text-primary">{pastReviews?.length}</p>
             </div>
           </div>
@@ -198,7 +198,7 @@ export default function DashboardPage() {
       >
         <CardBody>
           <div>
-            <h2 className="mb-3 text-2xl font-bold">Reviewed Books</h2>
+            <h2 className="mb-3 text-2xl font-bold">Reviews</h2>
             <h2 className="mb-6 text-2xl font-bold text-primary">
               {pastReviews?.length}
             </h2>
