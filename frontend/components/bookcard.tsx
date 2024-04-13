@@ -7,11 +7,18 @@ interface BookProps {
   author: string;
   coverImage: string;
   isbn: string;
+  book: any;
 }
 
-const BookCard: React.FC<BookProps> = ({ title, author, coverImage, isbn }) => {
+const BookCard: React.FC<BookProps> = ({
+  title,
+  author,
+  coverImage,
+  isbn,
+  book,
+}) => {
   return (
-    <article className="margin:20px max-w-[550px] rounded-2xl bg-zinc-300 px-5 py-5 shadow-sm max-md:px-5">
+    <article className="margin:20px mb-10 max-w-[550px] rounded-2xl bg-zinc-300 px-5 py-5 shadow-sm max-md:px-5">
       <div className="flex gap-5 max-md:flex-col max-md:gap-0">
         <div className="flex w-[33%] flex-col max-md:ml-0 max-md:w-full">
           <Image

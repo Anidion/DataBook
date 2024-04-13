@@ -33,6 +33,7 @@ export const book = mysqlTable("book", {
   isbn: varchar("isbn", { length: 13 }).primaryKey(),
   title: varchar("title", { length: 255 }),
   coverUrl: varchar("coverUrl", { length: 1024 }),
+  description: varchar("description", { length: 1024 }),
   quantity: bigint("quantity", { mode: "number", unsigned: true }),
   publisher: bigint("publisher", {
     mode: "number",

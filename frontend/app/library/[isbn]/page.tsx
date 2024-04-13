@@ -1,7 +1,26 @@
+"use client";
+
 import { Card, CardBody } from "@nextui-org/react";
 import BookView from "@/components/bookview";
+import { backend } from "@/services/axios";
+import { useEffect, useState } from "react";
 
-export default function Home() {
+export default function Home({ isbn }: { isbn: string }) {
+  const [book, setBook] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchBook = async () => {
+      try {
+        const response = await backend.get("/book", { params: { isbn: isbn } });
+        setBook(response.data);
+      } catch (error) {
+        console.error("Failed to fetch book:", error);
+      }
+    };
+
+    fetchBook();
+  }, [isbn]);
+
   return (
     <>
       <a href="javascript:history.go(-1)">
@@ -12,14 +31,18 @@ export default function Home() {
         radius="lg"
       >
         <CardBody>
-          <BookView
-            isbn={"9521"}
-            genre={"fantasy"}
-            title={"Life"}
-            author={"Ohiomah Imohi"}
-            description={"My name is Ohiomah Imohi and I am 20 years old."}
-            coverImage={"https://shorturl.at/cENX2"}
-          />
+          {book ? (
+            <BookView
+              isbn={isbn}
+              genre={book.genre}
+              title={book.title}
+              author={book.author}
+              description={book.description}
+              coverImage={book.coverImage || "/img/library.jpg"}
+            />
+          ) : (
+            <p>Loading book...</p>
+          )}
         </CardBody>
       </Card>
     </>

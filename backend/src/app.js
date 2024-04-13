@@ -82,8 +82,8 @@ app.post("/review", async (req, res) => {
         .status(400)
         .send(
           ErrorService.handleError(
-            `Book with ISBN "${review.isbn}" doesn't exist in this library.`
-          )
+            `Book with ISBN "${review.isbn}" doesn't exist in this library.`,
+          ),
         );
     }
 
@@ -99,8 +99,8 @@ app.post("/review", async (req, res) => {
       .send(
         ErrorService.handleError(
           err,
-          "An error occurred while creating a review."
-        )
+          "An error occurred while creating a review.",
+        ),
       );
   }
 });
@@ -124,7 +124,7 @@ app.get("/review", async (req, res) => {
         .leftJoin(schema.author, eq(schema.writtenby.author, schema.author.id))
         .leftJoin(
           schema.adminapproves,
-          eq(schema.review.id, schema.adminapproves.review)
+          eq(schema.review.id, schema.adminapproves.review),
         )
         .where(eq(schema.review.user, user.id))
         .orderBy(desc(schema.review.createdAt));
@@ -139,8 +139,8 @@ app.get("/review", async (req, res) => {
         .status(400)
         .send(
           ErrorService.handleError(
-            `Book with ISBN "${isbn}" doesn't exist in this library.`
-          )
+            `Book with ISBN "${isbn}" doesn't exist in this library.`,
+          ),
         );
     }
 
@@ -149,13 +149,13 @@ app.get("/review", async (req, res) => {
       .from(schema.review)
       .innerJoin(
         schema.adminapproves,
-        eq(schema.review.id, schema.adminapproves.review)
+        eq(schema.review.id, schema.adminapproves.review),
       )
       .where(
         and(
           eq(schema.review.isbn, isbn),
-          eq(schema.adminapproves.approved, true)
-        )
+          eq(schema.adminapproves.approved, true),
+        ),
       )
       .orderBy(desc(schema.review.createdAt));
 
@@ -169,8 +169,8 @@ app.get("/review", async (req, res) => {
       .send(
         ErrorService.handleError(
           err,
-          "An error occurred while fetching reviews."
-        )
+          "An error occurred while fetching reviews.",
+        ),
       );
   }
 });
@@ -201,8 +201,8 @@ app.delete("/review", async (req, res) => {
       .send(
         ErrorService.handleError(
           err,
-          "An error occurred while deleting a review."
-        )
+          "An error occurred while deleting a review.",
+        ),
       );
   }
 });
@@ -239,8 +239,8 @@ app.put("/admin/review", async (req, res) => {
       .send(
         ErrorService.handleError(
           err,
-          "An error occurred while approving a review."
-        )
+          "An error occurred while approving a review.",
+        ),
       );
   }
 });
@@ -269,7 +269,7 @@ app.get("/admin/review", async (req, res) => {
       .leftJoin(schema.author, eq(schema.writtenby.author, schema.author.id))
       .leftJoin(
         schema.adminapproves,
-        eq(schema.review.id, schema.adminapproves.review)
+        eq(schema.review.id, schema.adminapproves.review),
       )
       .where(isNull(schema.adminapproves.approved))
       .orderBy(desc(schema.review.createdAt));
@@ -284,8 +284,59 @@ app.get("/admin/review", async (req, res) => {
       .send(
         ErrorService.handleError(
           err,
-          "An error occurred while fetching reviews."
-        )
+          "An error occurred while fetching reviews.",
+        ),
+      );
+  }
+});
+
+app.get("/library", async (req, res) => {
+  try {
+    console.log("Received request at /book:", req.query);
+    let { search } = req.query;
+
+    const db = DbService.getDb();
+
+    if (!search) {
+      return res.status(400).send("Missing required fields.");
+    }
+
+    search = `%${search}%`;
+    console.log("search:", search);
+    const books = await db
+      .select()
+      .from(schema.book)
+      .leftJoin(schema.writtenby, eq(schema.book.isbn, schema.writtenby.isbn))
+      .leftJoin(schema.author, eq(schema.writtenby.author, schema.author.id))
+      .where(
+        or(
+          like(schema.book.title, search),
+          like(schema.author.name, search),
+          like(schema.book.isbn, search),
+        ),
+      );
+    if (!books) {
+      return res
+        .status(400)
+        .send(
+          ErrorService.handleError(
+            `"${search}" doesn't exist in this library.`,
+          ),
+        );
+    }
+
+    res.status(200).json(books);
+  } catch (err) {
+    if (res.closed) {
+      return;
+    }
+    return res
+      .status(err.status || 500)
+      .send(
+        ErrorService.handleError(
+          err,
+          "An error occurred while fetching books.",
+        ),
       );
   }
 });
@@ -302,28 +353,24 @@ app.get("/book", async (req, res) => {
     }
 
     search = `%${search}%`;
-    const books = await db
+    console.log("search:", search);
+    const book = await db
       .select()
       .from(schema.book)
-      .innerJoin(schema.writtenby, eq(schema.book.isbn, schema.writtenby.isbn))
-      .innerJoin(schema.author, eq(schema.writtenby.author, schema.author.id))
-      .where(
-        or(
-          like(schema.book.title, search),
-          like(schema.author.name, search),
-          like(schema.book.isbn, search)
-        )
-      );
-
-    if (!books) {
+      .leftJoin(schema.writtenby, eq(schema.book.isbn, schema.writtenby.isbn))
+      .leftJoin(schema.author, eq(schema.writtenby.author, schema.author.id))
+      .where(like(schema.book.isbn, search));
+    if (!book) {
       return res
         .status(400)
         .send(
-          ErrorService.handleError(`"${search}" doesn't exist in this library.`)
+          ErrorService.handleError(
+            `"${search}" doesn't exist in this library.`,
+          ),
         );
     }
 
-    res.status(200).json(books);
+    res.status(200).json(book);
   } catch (err) {
     if (res.closed) {
       return;
@@ -331,7 +378,10 @@ app.get("/book", async (req, res) => {
     return res
       .status(err.status || 500)
       .send(
-        ErrorService.handleError(err, "An error occurred while fetching books.")
+        ErrorService.handleError(
+          err,
+          "An error occurred while fetching books.",
+        ),
       );
   }
 });
