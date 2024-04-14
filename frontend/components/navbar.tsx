@@ -73,13 +73,9 @@ export const Navbar = () => {
         ) : (
           ""
         )}
-      </NavbarContent>
 
-      <NavbarContent>
         <ThemeSwitch />
-      </NavbarContent>
 
-      <NavbarContent className="basis-1 pl-4 sm:hidden" justify="end">
         <NavbarMenuToggle />
       </NavbarContent>
 

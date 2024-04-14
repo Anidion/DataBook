@@ -1,4 +1,14 @@
-# DataBook Development Guide
+# DataBook
+
+## A CPSC 471 Project
+
+### Authors
+
+- Ben Schmidt
+- Ohiomah Imohi
+- Haris Ahmad
+
+# Development Guide
 
 ## Basic Set Up
 
@@ -36,48 +46,51 @@ FLUSH PRIVILEGES;
 ```
 Now we create the database
 ```sql
-CREATE TABLE db;
+CREATE DATABASE db;
 ```
-
-After setting up the backend and validating it's connecting fine, try run 
-```bash
-cd backend/
-yarn drizzle-kit studio
-```
-to open a web-based DB viewer and confirm the schema was migrated correctly.
-
 
 ## First-time Set Up
 
+Install packages
 ```bash
 cd DataBook/
-# install pre-commit packages
 yarn
 
 cd backend/
-# install packages
 yarn
-# migrate DB. You must have the MySQL DB server running
-yarn migrate
 
 cd ../frontend
-# install packages
 yarn
 ```
 
 ## Running Dev Environment
 
+Running the backend will also run the migrations on the database you set up earlier
 ```bash
 cd backend/
 yarn dev
 ```
-
 You can also use the VSCode Node.js debugger by hitting `F5` when `app.js` is focused.
+
 
 ```bash
 cd frontend/
 yarn dev
 ```
+
+The frontend will be accessed on `localhost:3000`
+
+The backend will be accessed on `localhost:3001` if needed
+
+## Database Import
+
+We have provided sample data to load into the database once the first migration has run. This will let you test out features like the library which requires books and authors to be populated.
+
+Inside the `/sampleData` directory, you will find a .csv file for each table.
+
+Using a tool like DBeaver, you can import the data directly into your local database.
+
+## Dev Instructions
 
 ## Editing the DB Schema
 
@@ -93,14 +106,14 @@ You can view the DB directly using Drizzle Studio, which also lets you test sche
 Start it by running
 
 ```bash
-drizzle-kit studio
+yarn drizzle-kit studio
 ```
 
 ## Querying the Database
 
 Read the [Drizzle Docs](https://orm.drizzle.team/docs/select).
 
-Note, we need to use `schema.table` which is not specified by the docs.
+Note, we need to use `schema.table`
 ```javascript
   const result = await db.select().from(schema.user);
 ```
