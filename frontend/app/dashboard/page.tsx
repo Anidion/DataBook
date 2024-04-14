@@ -1,9 +1,10 @@
 "use client";
 
 import { ReviewModal } from "@/components/ReviewModal";
+import { GenresModal } from "@/components/GenresModal";
 import { backend } from "@/services/axios";
-import { Book, StoredReview } from "@/types";
-import { Card, CardBody, Button, Input } from "@nextui-org/react";
+import { Genre, StoredReview } from "@/types";
+import { Card, CardBody, Button, Input, Spinner } from "@nextui-org/react";
 import React, { useEffect, useState } from "react";
 
 export default function DashboardPage() {
@@ -20,18 +21,33 @@ export default function DashboardPage() {
   };
 
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [isGenresModalOpen, setIsGenresModalOpen] = useState(false);
   const [bookForReview, setBookForReview] = useState({
     isbn: 0,
     title: "",
     author: "",
   });
+  const [isLoading, setIsLoading] = useState(true);
 
-  const [pastReviews, setPastReviews] = useState<[StoredReview] | []>([]);
+  const [pastReservations, setPastReservations] = useState<[any] | []>([]);
+  const [pastReviews, setPastReviews] = useState<StoredReview[] | []>([]);
+  const [pastBooks, setPastBooks] = useState([]);
+  const [genres, setGenres] = useState<Genre[] | []>([]);
+  const [currentBooks, setCurrentBooks] = useState([]);
 
   useEffect(() => {
+    setIsLoading(true);
+    async function fetchPastReservations() {
+      try {
+        const usersReservations = await backend.get("/reservation");
+        setPastReservations(usersReservations.data);
+      } catch (error) {
+        console.log("Failed to fetch past reservations", error);
+      }
+    }
+
     async function fetchPastReviews() {
       const usersReviews = await backend.get("/review");
-      console.log(usersReviews.data);
       setPastReviews(
         usersReviews.data.map((review: any) => ({
           review: review.review,
@@ -40,23 +56,49 @@ export default function DashboardPage() {
         })),
       );
     }
-    fetchPastReviews();
-  }, []);
 
-  useEffect(() => {
-    async function fetchPastReservations() {
+    async function fetchPastBooks() {
       try {
-        const usersReservations = await backend.get("/reservation");
-        console.log(usersReservations.data);
-        setPastReservations(usersReservations.data);
+        const response = await backend.get("/reservation/past");
+        setPastBooks(response.data);
       } catch (error) {
-        console.log("Failed to fetch past reservations", error);
+        console.error("Failed to fetch past books:", error);
       }
     }
-    fetchPastReservations();
-  }, []);
 
-  const [pastReservations, setPastReservations] = useState<[any] | []>([]);
+    async function fetchGenres() {
+      try {
+        const response = await backend.get("/genre");
+        setGenres(response.data.map((genre: any) => genre.genre));
+      } catch (error) {
+        console.error("Failed to fetch genres:", error);
+      }
+    }
+
+    async function fetchCurrentBooks() {
+      try {
+        const response = await backend.get("/transaction/current");
+        setCurrentBooks(response.data);
+      } catch (error) {
+        console.error("Failed to fetch current books:", error);
+      }
+    }
+
+    async function getAllData() {
+      await Promise.all([
+        fetchPastReservations(),
+        fetchPastReviews(),
+        fetchCurrentBooks(),
+        fetchPastBooks(),
+        fetchGenres(),
+      ]);
+      setIsLoading(false);
+    }
+
+    getAllData();
+
+    return () => setIsLoading(false);
+  }, []);
 
   const openReviewModal = (transaction: any) => {
     const formattedBook = {
@@ -69,48 +111,73 @@ export default function DashboardPage() {
     setIsReviewModalOpen(true);
   };
 
-  const [pastBooks, setPastBooks] = useState([]);
-
-  useEffect(() => {
-    async function fetchPastBooks() {
-      try {
-        const response = await backend.get("/transaction/past");
-        setPastBooks(response.data);
-      } catch (error) {
-        console.error("Failed to fetch past books:", error);
-      }
-    }
-
-    fetchPastBooks();
-  }, []);
-
-  const [currentBooks, setCurrentBooks] = useState([]);
-
-  useEffect(() => {
-    async function fetchCurrentBooks() {
-      try {
-        const response = await backend.get("/transaction/current");
-        setCurrentBooks(response.data);
-      } catch (error) {
-        console.error("Failed to fetch current books:", error);
-      }
-    }
-
-    fetchCurrentBooks();
-  }, []);
+  const openGenresModal = () => setIsGenresModalOpen(true);
 
   // Function to apply the blue outline class
   const inputClassName = isEditable ? "input-editable" : "";
 
+  if (isLoading) {
+    return (
+      <div className="align-center flex h-full justify-center">
+        <Spinner size="lg" />
+      </div>
+    );
+  }
+
   return (
-    <div>
+    <>
       <ReviewModal
         isOpen={isReviewModalOpen}
         onClose={() => setIsReviewModalOpen(false)}
         book={bookForReview}
       />
+      <GenresModal
+        isOpen={isGenresModalOpen}
+        onClose={() => setIsGenresModalOpen(false)}
+        selectedGenres={genres}
+        setSelectedGenres={setGenres}
+      />
       <Card
         className="my-auto px-4 py-8 md:mx-auto md:w-[50%] md:py-10"
+        radius="lg"
+      >
+        <CardBody>
+          <div>
+            <h2 className="mb-3 text-center text-2xl font-bold">
+              Your favourite genres
+            </h2>
+
+            <div className="flex justify-center">
+              {genres.map((genre) => (
+                <span key={genre.id} className="mr-2.5 text-primary">
+                  {genre.name}
+                </span>
+              ))}
+            </div>
+
+            {!genres.length && (
+              <p className="text-center">
+                You haven&apos;t set any favourite genres yet. Click below to
+                get started!
+              </p>
+            )}
+
+            <div className="mt-2.5 text-center">
+              <Button
+                variant="ghost"
+                color="primary"
+                className="mx-auto mt-4 px-4 py-4 md:w-[20%] md:py-4"
+                onClick={() => openGenresModal()}
+              >
+                Add Favourite Genres
+              </Button>
+            </div>
+          </div>
+        </CardBody>
+      </Card>
+
+      <Card
+        className="my-auto mt-10 px-4 py-8 md:mx-auto md:w-[50%] md:py-10"
         radius="lg"
       >
         <CardBody>
@@ -328,6 +395,6 @@ export default function DashboardPage() {
           {buttonText}
         </Button>
       </div>
-    </div>
+    </>
   );
 }

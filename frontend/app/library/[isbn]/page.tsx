@@ -15,8 +15,8 @@ export default function Home({
   useEffect(() => {
     const fetchBook = async () => {
       try {
-        const response = await backend.get("/book", { params: { isbn: isbn } });
-        setBook(response.data[0]);
+        const response = await backend.get("/book", { params: { isbn } });
+        setBook(response.data);
       } catch (error) {
         console.error("Failed to fetch book:", error);
       }
@@ -35,10 +35,10 @@ export default function Home({
           <Link href="/library" className="mb-5">
             ⬅️ Back to Library
           </Link>
-          {book ? (
+          {!!book ? (
             <BookView
               isbn={isbn}
-              genre={book.genre?.name}
+              genres={book.genres}
               title={book.book?.title}
               author={book.author?.name}
               description={book.book?.description}
