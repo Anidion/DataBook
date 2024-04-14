@@ -78,6 +78,10 @@ cd frontend/
 yarn dev
 ```
 
+The frontend will be accessed on `localhost:3000`
+
+The backend will be accessed on `localhost:3001` if needed
+
 ## Dev Instructions
 
 ## Editing the DB Schema
