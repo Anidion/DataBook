@@ -20,6 +20,13 @@
       "when": 1713032366419,
       "tag": "0002_crazy_ender_wiggin",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1713051255013,
+      "tag": "0003_lean_scarecrow",
+      "breakpoints": true
     }
   ]
 }

@@ -161,7 +161,6 @@ export const reservation = mysqlTable(
       () => user.id,
     ),
     isbn: varchar("isbn", { length: 13 }).references(() => book.isbn),
-    startdate: datetime("startdate"),
     ...timestamps,
   },
   (table) => ({
