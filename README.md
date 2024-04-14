@@ -1,4 +1,14 @@
-# DataBook Development Guide
+# DataBook
+
+## A CPSC 471 Project
+
+### Authors
+
+- Ben Schmidt
+- Ohiomah Imohi
+- Haris Ahmad
+
+# Development Guide
 
 ## Basic Set Up
 
@@ -36,48 +46,39 @@ FLUSH PRIVILEGES;
 ```
 Now we create the database
 ```sql
-CREATE TABLE db;
+CREATE DATABASE db;
 ```
-
-After setting up the backend and validating it's connecting fine, try run 
-```bash
-cd backend/
-yarn drizzle-kit studio
-```
-to open a web-based DB viewer and confirm the schema was migrated correctly.
-
 
 ## First-time Set Up
 
+Install packages
 ```bash
 cd DataBook/
-# install pre-commit packages
 yarn
 
 cd backend/
-# install packages
 yarn
-# migrate DB. You must have the MySQL DB server running
-yarn migrate
 
 cd ../frontend
-# install packages
 yarn
 ```
 
 ## Running Dev Environment
 
+Running the backend will also run the migrations on the database you set up earlier
 ```bash
 cd backend/
 yarn dev
 ```
-
 You can also use the VSCode Node.js debugger by hitting `F5` when `app.js` is focused.
+
 
 ```bash
 cd frontend/
 yarn dev
 ```
+
+## Dev Instructions
 
 ## Editing the DB Schema
 
@@ -93,14 +94,14 @@ You can view the DB directly using Drizzle Studio, which also lets you test sche
 Start it by running
 
 ```bash
-drizzle-kit studio
+yarn drizzle-kit studio
 ```
 
 ## Querying the Database
 
 Read the [Drizzle Docs](https://orm.drizzle.team/docs/select).
 
-Note, we need to use `schema.table` which is not specified by the docs.
+Note, we need to use `schema.table`
 ```javascript
   const result = await db.select().from(schema.user);
 ```
