@@ -82,6 +82,14 @@ The frontend will be accessed on `localhost:3000`
 
 The backend will be accessed on `localhost:3001` if needed
 
+## Database Import
+
+We have provided sample data to load into the database once the first migration has run. This will let you test out features like the library which requires books and authors to be populated.
+
+Inside the `/sampleData` directory, you will find a .csv file for each table.
+
+Using a tool like DBeaver, you can import the data directly into your local database.
+
 ## Dev Instructions
 
 ## Editing the DB Schema
