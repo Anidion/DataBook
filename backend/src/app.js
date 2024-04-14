@@ -8,7 +8,18 @@ import { DbService } from "./services/db.js";
 import { UserService } from "./services/user.js";
 import { ErrorService } from "./services/error.js";
 
-import { desc, eq, lt, or, like, and, isNull, inArray, sql } from "drizzle-orm";
+import {
+  desc,
+  eq,
+  lt,
+  or,
+  like,
+  and,
+  isNull,
+  gte,
+  inArray,
+  sql,
+} from "drizzle-orm";
 
 import { BookService } from "./services/book.js";
 
@@ -231,13 +242,40 @@ app.get("/reservation", async (req, res) => {
   }
 });
 
-app.get("/reservation/past", async (req, res) => {
+app.get("/transaction/current", async (req, res) => {
   try {
     const user = await UserService.getUserIfAuthorized(req, res);
     const db = DbService.getDb();
-    // const today = new Date().toISOString();
 
-    const pastReservations = await db
+    const currentTransactions = await db
+      .select()
+      .from(schema.transaction)
+      .innerJoin(schema.book, eq(schema.book.isbn, schema.transaction.isbn))
+      .leftJoin(schema.writtenby, eq(schema.book.isbn, schema.writtenby.isbn))
+      .leftJoin(schema.author, eq(schema.writtenby.author, schema.author.id))
+      .where(
+        and(
+          eq(schema.transaction.user, user.id),
+          gte(schema.transaction.enddate, new Date()), // Ensure endDate is NOT before today
+        ),
+      )
+      .orderBy(desc(schema.transaction.enddate));
+
+    res.status(200).json(currentTransactions);
+  } catch (err) {
+    console.error("Error fetching past transactions:", err);
+    res.status(err.status || 500).send({
+      error: "An error occurred while fetching current transactions.",
+    });
+  }
+});
+
+app.get("/transaction/past", async (req, res) => {
+  try {
+    const user = await UserService.getUserIfAuthorized(req, res);
+    const db = DbService.getDb();
+
+    const pastTransactions = await db
       .select()
       .from(schema.transaction)
       .innerJoin(schema.book, eq(schema.book.isbn, schema.transaction.isbn))
@@ -251,11 +289,11 @@ app.get("/reservation/past", async (req, res) => {
       )
       .orderBy(desc(schema.transaction.enddate));
 
-    res.status(200).json(pastReservations);
+    res.status(200).json(pastTransactions);
   } catch (err) {
-    console.error("Error fetching past reservations:", err);
+    console.error("Error fetching past transaction:", err);
     res.status(err.status || 500).send({
-      error: "An error occurred while fetching past reservations.",
+      error: "An error occurred while fetching past transactions.",
     });
   }
 });
@@ -471,6 +509,104 @@ app.get("/book", async (req, res) => {
         ErrorService.handleError(
           err,
           "An error occurred while fetching books.",
+        ),
+      );
+  }
+});
+
+app.post("/reservation", async (req, res) => {
+  try {
+    console.log("Received request at /reservation:", req.body, req.cookies);
+    const user = await UserService.getUserIfAuthorized(req, res);
+    console.log("user authed:", user);
+    const { isbn } = req.body;
+
+    if (!isbn) {
+      return res.status(400).send("Missing required fields.");
+    }
+
+    const db = DbService.getDb();
+
+    const book = await BookService.getBookIfExists(isbn);
+
+    if (!book) {
+      return res
+        .status(400)
+        .send(
+          ErrorService.handleError(
+            `Book with ISBN "${isbn}" doesn't exist in this library.`,
+          ),
+        );
+    }
+
+    await db.insert(schema.reservation).values({
+      user: user.id,
+      isbn,
+    });
+
+    res.status(200).json({});
+  } catch (err) {
+    if (res.closed) {
+      return;
+    }
+    return res
+      .status(err.status || 500)
+      .send(
+        ErrorService.handleError(
+          err,
+          "An error occurred while creating a reservation.",
+        ),
+      );
+  }
+});
+
+app.post("/transaction", async (req, res) => {
+  try {
+    console.log("Received request at /transaction:", req.body, req.cookies);
+    const user = await UserService.getUserIfAuthorized(req, res);
+    console.log("user authed:", user);
+    const { isbn } = req.body;
+
+    if (!isbn) {
+      return res.status(400).send("Missing required fields.");
+    }
+
+    const db = DbService.getDb();
+
+    const book = await BookService.getBookIfExists(isbn);
+
+    if (!book) {
+      return res
+        .status(400)
+        .send(
+          ErrorService.handleError(
+            `Book with ISBN "${isbn}" doesn't exist in this library.`,
+          ),
+        );
+    }
+
+    const startdate = new Date();
+    // Set end date to 14 days from now for 2-week loans
+    const enddate = new Date(new Date().setDate(startdate.getDate() + 14));
+
+    await db.insert(schema.transaction).values({
+      user: user.id,
+      isbn,
+      startdate,
+      enddate,
+    });
+
+    res.status(200).json({});
+  } catch (err) {
+    if (res.closed) {
+      return;
+    }
+    return res
+      .status(err.status || 500)
+      .send(
+        ErrorService.handleError(
+          err,
+          "An error occurred while creating a transaction.",
         ),
       );
   }

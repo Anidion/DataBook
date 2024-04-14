@@ -1,3 +1,5 @@
+import { createReservation } from "@/services/reservation";
+import { createTransaction } from "@/services/transaction";
 import { Genre } from "@/types";
 import { Button, Image } from "@nextui-org/react";
 import * as React from "react";
@@ -49,11 +51,22 @@ const BookView: React.FC<BookViewProps> = ({
           {description}
         </p>
       </div>
-      <Button type="button" variant="solid" color="primary" className="mb-2">
-        Reserve
+      <Button
+        type="button"
+        variant="solid"
+        color="primary"
+        className="mb-2"
+        onClick={() => createTransaction({ isbn })}
+      >
+        Check Out
       </Button>
       <br></br>
-      <Button type="button" variant="ghost" color="primary">
+      <Button
+        type="button"
+        variant="ghost"
+        color="primary"
+        onClick={() => createReservation({ isbn })}
+      >
         Save For Later
       </Button>
     </article>
