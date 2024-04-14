@@ -10,7 +10,7 @@ export default function Home() {
     event.preventDefault();
     try {
       setIsLoading(true);
-      const result = await backend.get("/library", {
+      const result = await backend.get("/book/search", {
         params: { search: query },
       });
       setResults(result.data);

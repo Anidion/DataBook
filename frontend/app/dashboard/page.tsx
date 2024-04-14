@@ -59,7 +59,7 @@ export default function DashboardPage() {
 
     async function fetchPastBooks() {
       try {
-        const response = await backend.get("/reservation/past");
+        const response = await backend.get("/transaction/past");
         setPastBooks(response.data);
       } catch (error) {
         console.error("Failed to fetch past books:", error);
