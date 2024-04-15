@@ -7,7 +7,8 @@ import { ErrorService } from "./error.js";
 export const UserService = {
   getUserIfAuthorized: async (req, res) => {
     if (!req.cookies?.session) {
-      return res.status(401).send(ErrorService.handleError("Not logged in"));
+      res.status(401).send(ErrorService.handleError("Not logged in"));
+      throw new Error("Not logged in");
     }
 
     const userFromCookie = await UserService.getUserFromCookie(
@@ -15,9 +16,8 @@ export const UserService = {
     );
 
     if (!userFromCookie) {
-      return res
-        .status(401)
-        .send(ErrorService.handleError("Invalid login session"));
+      res.status(401).send(ErrorService.handleError("Invalid login session"));
+      throw new Error("Invalid login session");
     }
 
     const db = DbService.getDb();
@@ -36,6 +36,7 @@ export const UserService = {
 
     if (!userFromDb || !userFromDb.length) {
       res.status(401).send(ErrorService.handleError("User does not exist"));
+      throw new Error("User does not exist");
     }
 
     return userFromDb[0];
