@@ -31,7 +31,7 @@ router.put("/review", async (req, res) => {
 
     return res.status(200).json({});
   } catch (err) {
-    if (res.closed) {
+    if (res.headersSent) {
       return;
     }
     return res
@@ -76,7 +76,7 @@ router.get("/review", async (req, res) => {
 
     res.status(200).json(reviews);
   } catch (err) {
-    if (res.closed) {
+    if (res.headersSent) {
       return;
     }
     return res

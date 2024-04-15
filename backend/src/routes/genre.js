@@ -21,7 +21,7 @@ router.get("/", async (req, res) => {
 
     res.status(200).json(results);
   } catch (err) {
-    if (res.closed) {
+    if (res.headersSent) {
       return;
     }
     return res
@@ -44,7 +44,7 @@ router.get("/all", async (req, res) => {
 
     res.status(200).json(results);
   } catch (err) {
-    if (res.closed) {
+    if (res.headersSent) {
       return;
     }
     return res
@@ -113,7 +113,7 @@ router.put("/", async (req, res) => {
 
     res.status(200).json(results);
   } catch (err) {
-    if (res.closed) {
+    if (res.headersSent) {
       return;
     }
     return res

@@ -72,7 +72,7 @@ router.get("/search", async (req, res) => {
 
     res.status(200).json(booksWithGenresDeduped);
   } catch (err) {
-    if (res.closed) {
+    if (res.headersSent) {
       return;
     }
     return res
@@ -125,7 +125,7 @@ router.get("/", async (req, res) => {
 
     res.status(200).json(bookWithGenres);
   } catch (err) {
-    if (res.closed) {
+    if (res.headersSent) {
       return;
     }
     return res
