@@ -23,6 +23,9 @@ export const siteConfig = {
     {
       label: "Admin Dashboard",
       href: "/admin",
+      condition: (user: any) => {
+        return user && user.isAdmin;
+      },
     },
   ],
   navMenuItems: [
