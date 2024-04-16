@@ -82,7 +82,7 @@ export const Navbar = () => {
       </NavbarContent>
 
       <NavbarMenu>
-        <div className="mx-4 mt-2 flex flex-col gap-2">
+        <div className="mx-4 mt-2 flex flex-col gap-2 md:items-center">
           {siteConfig.navMenuItems.map((item, index) =>
             item?.condition && !item?.condition(user) ? null : (
               <NavbarMenuItem key={`${item}-${index}`}>
