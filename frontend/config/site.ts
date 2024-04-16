@@ -19,10 +19,12 @@ export const siteConfig = {
     {
       label: "Dashboard",
       href: "/dashboard",
+      condition: (user: any) => user && Object.keys(user).length,
     },
     {
       label: "Admin Dashboard",
       href: "/admin",
+      condition: (user: any) => user && user.isAdmin,
     },
   ],
   navMenuItems: [
@@ -33,13 +35,12 @@ export const siteConfig = {
     {
       label: "Dashboard",
       href: "/dashboard",
+      condition: (user: any) => user && Object.keys(user).length,
     },
     {
       label: "Admin Dashboard",
       href: "/admin",
-      condition: (user: any) => {
-        return user && user.isAdmin;
-      },
+      condition: (user: any) => user && user.isAdmin,
     },
     {
       label: "Logout",

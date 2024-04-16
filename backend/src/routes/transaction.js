@@ -29,6 +29,9 @@ router.get("/current", async (req, res) => {
 
     res.status(200).json(currentTransactions);
   } catch (err) {
+    if (res.headersSent) {
+      return;
+    }
     console.error("Error fetching past transactions:", err);
     res.status(err.status || 500).send({
       error: "An error occurred while fetching current transactions.",
@@ -57,6 +60,9 @@ router.get("/past", async (req, res) => {
 
     res.status(200).json(pastTransactions);
   } catch (err) {
+    if (res.headersSent) {
+      return;
+    }
     console.error("Error fetching past transaction:", err);
     res.status(err.status || 500).send({
       error: "An error occurred while fetching past transactions.",
@@ -102,7 +108,7 @@ router.post("/", async (req, res) => {
 
     res.status(200).json({});
   } catch (err) {
-    if (res.closed) {
+    if (res.headersSent) {
       return;
     }
     return res

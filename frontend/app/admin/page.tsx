@@ -98,7 +98,7 @@ export default function DashboardPage() {
                   <Button
                     color="success"
                     size="sm"
-                    className="mr-2 mt-3 text-foreground"
+                    className="mr-2 mt-3 text-background"
                     isLoading={updatingReviews}
                     onClick={() => moderateReview(review.review.id, true)}
                   >
@@ -107,6 +107,7 @@ export default function DashboardPage() {
                   <Button
                     color="danger"
                     size="sm"
+                    className="text-background"
                     isLoading={updatingReviews}
                     onClick={() => moderateReview(review.review.id, false)}
                   >

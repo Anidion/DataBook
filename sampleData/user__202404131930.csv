@@ -1,5 +1,0 @@
-"id","username","password","email","isAdmin","createdAt","updatedAt"
-1,ben1,$2b$10$F1jg9pZOXQSCxdQkAI6Yt.IbI2xfJE/eQnATDBjR1ufWz32vLshNC,ben@mail.com,1,"2024-04-13 19:14:54","2024-04-13 19:14:54"
-2,empty,$2b$10$PuCcUJZE9j7Zn3UBfxeGV.CemnzIPOXUyeevy4sfy9asIVnTHmHN2,empty@mail.com,,"2024-04-13 19:14:54","2024-04-13 19:14:54"
-3,test,$2b$10$hY.VefmVhFjel1JA3xLvWuY8lqkgwi52vYD6HFjAFhQntnUAmxseG,test@gmail.com,,"2024-04-13 19:14:54","2024-04-13 19:14:54"
-4,demo,$2b$10$SJLaOe23JtvpL21y0aW5i.FJQQkXEpoOUD/HMXUX55t6OBBVRG3/q,demo@mail.com,,"2024-04-13 19:14:54","2024-04-13 19:14:54"

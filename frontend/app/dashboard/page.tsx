@@ -166,7 +166,7 @@ export default function DashboardPage() {
               <Button
                 variant="ghost"
                 color="primary"
-                className="mx-auto mt-4 px-4 py-4 md:w-[20%] md:py-4"
+                className="mx-auto mt-4 px-4 py-4 md:py-4"
                 onClick={() => openGenresModal()}
               >
                 Add Favourite Genres

@@ -49,6 +49,15 @@ Now we create the database
 CREATE DATABASE db;
 ```
 
+Next up we can import an existing copy of the database. This command will import the dump we created of our DB into the local DB you just created.
+
+```bash
+cd Databook/
+mysql -u root -p db < databook.sql
+```
+
+[Source](https://www.digitalocean.com/community/tutorials/how-to-import-and-export-databases-in-mysql-or-mariadb)
+
 ## First-time Set Up
 
 Install packages
@@ -81,14 +90,6 @@ yarn dev
 The frontend will be accessed on `localhost:3000`
 
 The backend will be accessed on `localhost:3001` if needed
-
-## Database Import
-
-We have provided sample data to load into the database once the first migration has run. This will let you test out features like the library which requires books and authors to be populated.
-
-Inside the `/sampleData` directory, you will find a .csv file for each table.
-
-Using a tool like DBeaver, you can import the data directly into your local database.
 
 ## Dev Instructions
 

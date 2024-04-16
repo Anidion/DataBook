@@ -25,6 +25,9 @@ router.get("/", async (req, res) => {
     console.log("Returning:", result);
     res.send(result);
   } catch (err) {
+    if (res.headersSent) {
+      return;
+    }
     console.error("Error fetching reservations:", err);
     res.status(err);
   }
@@ -62,7 +65,7 @@ router.post("/", async (req, res) => {
 
     res.status(200).json({});
   } catch (err) {
-    if (res.closed) {
+    if (res.headersSent) {
       return;
     }
     return res
